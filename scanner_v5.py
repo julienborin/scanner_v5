@@ -2510,19 +2510,48 @@ def sauver_alertes_prix(alertes):
         json.dump(alertes, f, indent=2)
 
 def get_prix_actuel(ticker):
-    """Récupère le prix actuel d'un actif"""
+    """Récupère le prix actuel d'un actif — multiple fallbacks"""
+    # Méthode 1 : ccxt (crypto)
     try:
         if HAS_CCXT and ticker in CCXT_SYMBOLS:
             exchange = ccxt.binance({'enableRateLimit': True})
             t = exchange.fetch_ticker(CCXT_SYMBOLS[ticker])
-            return t['last']
+            if t and t.get('last'):
+                return float(t['last'])
+    except:
+        pass
+    
+    # Méthode 2 : yfinance Ticker
+    try:
+        t = yf.Ticker(ticker)
+        info = t.fast_info
+        price = info.get('lastPrice') or info.get('regularMarketPrice')
+        if price and price > 0:
+            return float(price)
+    except:
+        pass
+    
+    # Méthode 3 : yfinance download
+    try:
         data = yf.download(ticker, period="5d", interval="1d", progress=False)
         if isinstance(data.columns, pd.MultiIndex):
             data.columns = data.columns.get_level_values(0)
         if not data.empty:
             return float(data['Close'].iloc[-1])
     except:
-        return None
+        pass
+    
+    # Méthode 4 : yfinance download 1mo (fallback ultime)
+    try:
+        data = yf.download(ticker, period="1mo", interval="1d", progress=False)
+        if isinstance(data.columns, pd.MultiIndex):
+            data.columns = data.columns.get_level_values(0)
+        if not data.empty:
+            return float(data['Close'].iloc[-1])
+    except:
+        pass
+    
+    return None
 
 st.divider()
 st.header("🎮 Simulation d'investissement")
