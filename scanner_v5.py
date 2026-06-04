@@ -273,7 +273,8 @@ def formater_alerte_telegram(resultat):
 📐 R:R = 1:{round(r['sl_tp']['ratio_rr'], 1)}
 """
     if r.get('ml_prediction'):
-        msg += f"\n🤖 ML: {round(r['ml_prediction']['proba'] * 100, 0)}% confiance"
+        msg += f"\n🤖 ML: {round(r['ml_prediction']['confiance'] * 100, 0)}% confiance"
+
 
     msg += f"\n⏰ {datetime.now(pytz.timezone('Europe/Zurich')).strftime('%H:%M:%S')}"
     return msg
@@ -2106,8 +2107,15 @@ with st.sidebar:
         email_addr = st.text_input("Adresse email", placeholder="nom@bluewin.ch")
         email_pass = st.text_input("Mot de passe", type="password")
     elif alert_mode == "Telegram":
-        tg_token = st.text_input("Bot Token", type="password")
-        tg_chat_id = st.text_input("Chat ID")
+        tg_token_defaut = config.get("tg_token", "")
+        tg_chat_id_defaut = config.get("tg_chat_id", "")
+        tg_token = st.text_input("Bot Token", value=tg_token_defaut, type="password")
+        tg_chat_id = st.text_input("Chat ID", value=tg_chat_id_defaut)
+        if tg_token != tg_token_defaut or tg_chat_id != tg_chat_id_defaut:
+            config["tg_token"] = tg_token
+            config["tg_chat_id"] = tg_chat_id
+            sauver_config(config)
+
 
     st.divider()
 
