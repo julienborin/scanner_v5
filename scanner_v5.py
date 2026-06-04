@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 # ============================================================
-# TRADING SCANNER v5.0 (ULTIMATE EDITION + SIMULATION + AIDE)
+# TRADING SCANNER v5.0 (ULTIMATE EDITION)
 # Best of: Streamlit + pandas-ta + ccxt + LightGBM + Telegram
-# + Module Simulation + Glossaire + Sources d'apprentissage
 # ============================================================
 
 import streamlit as st
@@ -52,14 +51,13 @@ import hashlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import lru_cache
 
-st.set_page_config(page_title="Trading Scanner v5.0", page_icon="🧠", layout="wide")
+st.set_page_config(page_title="Trading Scanner v5.0", page_icon="ðŸ§ ", layout="wide")
 
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # PERSISTANCE CONFIGURATION
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 CONFIG_FILE = "scanner_config.json"
-SIMULATION_FILE = "simulation_data.json"
 
 def charger_config():
     if os.path.exists(CONFIG_FILE):
@@ -74,22 +72,9 @@ def sauver_config(config):
     with open(CONFIG_FILE, "w") as f:
         json.dump(config, f)
 
-def charger_simulations():
-    if os.path.exists(SIMULATION_FILE):
-        try:
-            with open(SIMULATION_FILE, "r") as f:
-                return json.load(f)
-        except:
-            return []
-    return []
-
-def sauver_simulations(sims):
-    with open(SIMULATION_FILE, "w") as f:
-        json.dump(sims, f, indent=2)
-
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # SESSION STATE
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 if "signaux_detectes" not in st.session_state:
     st.session_state.signaux_detectes = {}
@@ -99,25 +84,25 @@ if "historique_signaux" not in st.session_state:
 AVATRADE_LINK = "https://www.avatrade.com/trading-account/login"
 
 ACTIFS = {
-    "🥇 Or (Gold)": "GC=F",
-    "🥈 Argent (Silver)": "SI=F",
-    "💶 EUR/CHF": "EURCHF=X",
-    "💵 EUR/USD": "EURUSD=X",
-    "₿ Bitcoin": "BTC-USD",
-    "🍎 Apple": "AAPL",
-    "💻 Microsoft": "MSFT",
-    "🚗 Tesla": "TSLA",
-    "⟠ Ethereum": "ETH-USD",
-    "⬜ Platine": "PL=F",
-    "🛢️ Pétrole": "CL=F",
-    "📊 S&P 500": "^GSPC",
-    "💎 Solana": "SOL-USD",
-    "🔗 Chainlink": "LINK-USD",
-    "🟡 BNB": "BNB-USD",
-    "📈 Nasdaq": "^IXIC",
+    "ðŸ¥‡ Or (Gold)": "GC=F",
+    "ðŸ¥ˆ Argent (Silver)": "SI=F",
+    "ðŸ’¶ EUR/CHF": "EURCHF=X",
+    "ðŸ’µ EUR/USD": "EURUSD=X",
+    "â‚¿ Bitcoin": "BTC-USD",
+    "ðŸŽ Apple": "AAPL",
+    "ðŸ’» Microsoft": "MSFT",
+    "ðŸš— Tesla": "TSLA",
+    "âŸ  Ethereum": "ETH-USD",
+    "â¬œ Platine": "PL=F",
+    "ðŸ›¢ï¸ PÃ©trole": "CL=F",
+    "ðŸ“Š S&P 500": "^GSPC",
+    "ðŸ’Ž Solana": "SOL-USD",
+    "ðŸ”— Chainlink": "LINK-USD",
+    "ðŸŸ¡ BNB": "BNB-USD",
+    "ðŸ“ˆ Nasdaq": "^IXIC",
 }
 
-# Tickers ccxt pour données temps réel
+# Tickers ccxt pour donnÃ©es temps rÃ©el
 CCXT_SYMBOLS = {
     "BTC-USD": "BTC/USDT",
     "ETH-USD": "ETH/USDT",
@@ -140,32 +125,32 @@ POIDS = {
     "SENTIMENT": 2.0,
     "NEWS_NLP": 2.0,
     "ONCHAIN": 2.5,
-    "ICHIMOKU": 2.0,
-    "SUPPORTS_RES": 1.5,
-    "ML_PREDICTION": 3.0,
-    "VWAP": 1.0,
-    "ORDER_FLOW": 1.5,
+    "ICHIMOKU": 2.0,       # NOUVEAU v5.0
+    "SUPPORTS_RES": 1.5,   # NOUVEAU v5.0
+    "ML_PREDICTION": 3.0,  # NOUVEAU v5.0
+    "VWAP": 1.0,           # NOUVEAU v5.0
+    "ORDER_FLOW": 1.5,     # NOUVEAU v5.0
 }
 
 SEUIL_ADX = 25
 
 ACTIF_CATEGORIE = {
-    "🥇 Or (Gold)": "matieres_premieres",
-    "🥈 Argent (Silver)": "matieres_premieres",
-    "💶 EUR/CHF": "forex",
-    "💵 EUR/USD": "forex",
-    "₿ Bitcoin": "crypto",
-    "🍎 Apple": "actions",
-    "💻 Microsoft": "actions",
-    "🚗 Tesla": "actions",
-    "⟠ Ethereum": "crypto",
-    "⬜ Platine": "matieres_premieres",
-    "🛢️ Pétrole": "matieres_premieres",
-    "📊 S&P 500": "actions",
-    "💎 Solana": "crypto",
-    "🔗 Chainlink": "crypto",
-    "🟡 BNB": "crypto",
-    "📈 Nasdaq": "actions",
+    "ðŸ¥‡ Or (Gold)": "matieres_premieres",
+    "ðŸ¥ˆ Argent (Silver)": "matieres_premieres",
+    "ðŸ’¶ EUR/CHF": "forex",
+    "ðŸ’µ EUR/USD": "forex",
+    "â‚¿ Bitcoin": "crypto",
+    "ðŸŽ Apple": "actions",
+    "ðŸ’» Microsoft": "actions",
+    "ðŸš— Tesla": "actions",
+    "âŸ  Ethereum": "crypto",
+    "â¬œ Platine": "matieres_premieres",
+    "ðŸ›¢ï¸ PÃ©trole": "matieres_premieres",
+    "ðŸ“Š S&P 500": "actions",
+    "ðŸ’Ž Solana": "crypto",
+    "ðŸ”— Chainlink": "crypto",
+    "ðŸŸ¡ BNB": "crypto",
+    "ðŸ“ˆ Nasdaq": "actions",
 }
 
 MACRO_SENSITIVITY = {
@@ -248,12 +233,12 @@ BEARISH_KEYWORDS = [
 ]
 
 
-# ══════════════════════════════════════════════════════════
-# TELEGRAM ALERTS
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# TELEGRAM ALERTS (NOUVEAU v5.0)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 def envoyer_telegram(message, bot_token, chat_id):
-    """Envoie une alerte Telegram instantanée"""
+    """Envoie une alerte Telegram instantanÃ©e"""
     try:
         url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
         payload = {
@@ -270,37 +255,37 @@ def envoyer_telegram(message, bot_token, chat_id):
 def formater_alerte_telegram(resultat):
     """Formate un signal pour Telegram"""
     r = resultat
-    emoji = "🟢" if r['action'] == "ACHAT" else "🔴"
+    emoji = "ðŸŸ¢" if r['action'] == "ACHAT" else "ðŸ”´"
     direction = "LONG" if r['action'] == "ACHAT" else "SHORT"
     score = r['score_achat'] if r['action'] == "ACHAT" else r['score_vente']
 
     msg = f"""
-{emoji} <b>SIGNAL {direction}</b> — {r['nom']}
+{emoji} <b>SIGNAL {direction}</b> â€” {r['nom']}
 
-💰 Prix: {round(r['prix'], 2)}
-📊 Score: {round(score, 1)}/{round(r['score_max'], 0)}
-📈 ADX: {round(r['adx'], 1)}
+ðŸ’° Prix: {round(r['prix'], 2)}
+ðŸ“Š Score: {round(score, 1)}/{round(r['score_max'], 0)}
+ðŸ“ˆ ADX: {round(r['adx'], 1)}
 """
     if r.get('sl_tp'):
         msg += f"""
-🛑 SL: {round(r['sl_tp']['stop_loss'], 2)} (-{round(r['sl_tp']['risque_pct'], 2)}%)
-🎯 TP: {round(r['sl_tp']['take_profit'], 2)} (+{round(r['sl_tp']['reward_pct'], 2)}%)
-📐 R:R = 1:{round(r['sl_tp']['ratio_rr'], 1)}
+ðŸ›‘ SL: {round(r['sl_tp']['stop_loss'], 2)} (-{round(r['sl_tp']['risque_pct'], 2)}%)
+ðŸŽ¯ TP: {round(r['sl_tp']['take_profit'], 2)} (+{round(r['sl_tp']['reward_pct'], 2)}%)
+ðŸ“ R:R = 1:{round(r['sl_tp']['ratio_rr'], 1)}
 """
     if r.get('ml_prediction'):
-        msg += f"\n🤖 ML: {round(r['ml_prediction']['proba'] * 100, 0)}% confiance"
+        msg += f"\nðŸ¤– ML: {round(r['ml_prediction']['proba'] * 100, 0)}% confiance"
 
-    msg += f"\n⏰ {datetime.now(pytz.timezone('Europe/Zurich')).strftime('%H:%M:%S')}"
+    msg += f"\nâ° {datetime.now(pytz.timezone('Europe/Zurich')).strftime('%H:%M:%S')}"
     return msg
 
 
-# ══════════════════════════════════════════════════════════
-# CCXT — DONNÉES TEMPS RÉEL
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# CCXT â€” DONNÃ‰ES TEMPS RÃ‰EL (NOUVEAU v5.0)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-@st.cache_data(ttl=60, show_spinner="⚡ Données temps réel...")
+@st.cache_data(ttl=60, show_spinner="âš¡ DonnÃ©es temps rÃ©el...")
 def get_realtime_data_ccxt(symbol, timeframe='1d', limit=365):
-    """Récupère les données via ccxt (Binance)"""
+    """RÃ©cupÃ¨re les donnÃ©es via ccxt (Binance) â€” plus rapide et fiable que Yahoo pour crypto"""
     if not HAS_CCXT:
         return None
     try:
@@ -314,9 +299,9 @@ def get_realtime_data_ccxt(symbol, timeframe='1d', limit=365):
         return None
 
 
-@st.cache_data(ttl=30, show_spinner="📊 Order book...")
+@st.cache_data(ttl=30, show_spinner="ðŸ“Š Order book...")
 def get_order_book_imbalance(symbol):
-    """Analyse le carnet d'ordres pour détecter la pression achat/vente"""
+    """Analyse le carnet d'ordres pour dÃ©tecter la pression achat/vente"""
     if not HAS_CCXT:
         return None
     try:
@@ -327,7 +312,7 @@ def get_order_book_imbalance(symbol):
         total = bids_volume + asks_volume
         if total == 0:
             return None
-        imbalance = (bids_volume - asks_volume) / total
+        imbalance = (bids_volume - asks_volume) / total  # -1 Ã  +1
         bid_wall = max(ob['bids'][:20], key=lambda x: x[1]) if ob['bids'] else None
         ask_wall = max(ob['asks'][:20], key=lambda x: x[1]) if ob['asks'] else None
         return {
@@ -342,11 +327,12 @@ def get_order_book_imbalance(symbol):
         return None
 
 
-# ══════════════════════════════════════════════════════════
-# INDICATEURS TECHNIQUES v5.0
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# INDICATEURS TECHNIQUES v5.0 (pandas-ta + custom)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 def calc_rsi(series, period=14):
+    """RSI â€” fallback si pandas-ta pas dispo"""
     if HAS_PANDAS_TA:
         result = ta.rsi(series, length=period)
         return result if result is not None else _calc_rsi_manual(series, period)
@@ -376,7 +362,7 @@ def calc_macd(close):
         macd_df = ta.macd(close, fast=12, slow=26, signal=9)
         if macd_df is not None and not macd_df.empty:
             cols = macd_df.columns.tolist()
-            return macd_df[cols[0]], macd_df[cols[2]]
+            return macd_df[cols[0]], macd_df[cols[2]]  # MACD, Signal
     ema_12 = close.ewm(span=12).mean()
     ema_26 = close.ewm(span=26).mean()
     macd = ema_12 - ema_26
@@ -399,7 +385,8 @@ def calc_adx(data, period=14):
     if HAS_PANDAS_TA:
         adx_df = ta.adx(data['High'], data['Low'], data['Close'], length=period)
         if adx_df is not None and not adx_df.empty:
-            return adx_df.iloc[:, 0]
+            return adx_df.iloc[:, 0]  # ADX column
+    # Fallback manual
     high = data['High']
     low = data['Low']
     close = data['Close']
@@ -437,9 +424,9 @@ def calc_bollinger(close, period=20, std_mult=2):
         bb = ta.bbands(close, length=period, std=std_mult)
         if bb is not None and not bb.empty:
             cols = bb.columns.tolist()
-            upper = bb[cols[2]]
-            lower = bb[cols[0]]
-            mid = bb[cols[1]]
+            upper = bb[cols[2]]  # BBU
+            lower = bb[cols[0]]  # BBL
+            mid = bb[cols[1]]    # BBM
             bandwidth = ((upper - lower) / mid) * 100
             return upper, lower, mid, bandwidth
     sma = close.rolling(period).mean()
@@ -450,24 +437,32 @@ def calc_bollinger(close, period=20, std_mult=2):
     return upper, lower, sma, bandwidth
 
 
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # NOUVEAUX INDICATEURS v5.0
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 def calc_ichimoku(data):
-    """Ichimoku Cloud"""
+    """Ichimoku Cloud â€” indicateur japonais puissant"""
     if HAS_PANDAS_TA:
         ichi = ta.ichimoku(data['High'], data['Low'], data['Close'])
         if ichi is not None and len(ichi) == 2:
-            return ichi[0]
+            return ichi[0]  # DataFrame with all Ichimoku lines
+    # Manual calculation
     high = data['High']
     low = data['Low']
     close = data['Close']
+
+    # Tenkan-sen (Conversion Line) â€” 9 periods
     tenkan = (high.rolling(9).max() + low.rolling(9).min()) / 2
+    # Kijun-sen (Base Line) â€” 26 periods
     kijun = (high.rolling(26).max() + low.rolling(26).min()) / 2
+    # Senkou Span A (Leading Span A)
     senkou_a = ((tenkan + kijun) / 2).shift(26)
+    # Senkou Span B (Leading Span B)
     senkou_b = ((high.rolling(52).max() + low.rolling(52).min()) / 2).shift(26)
+    # Chikou Span (Lagging Span)
     chikou = close.shift(-26)
+
     return pd.DataFrame({
         'tenkan': tenkan,
         'kijun': kijun,
@@ -478,18 +473,19 @@ def calc_ichimoku(data):
 
 
 def calc_vwap(data):
-    """VWAP — Volume Weighted Average Price"""
+    """VWAP â€” Volume Weighted Average Price"""
     if HAS_PANDAS_TA:
         result = ta.vwap(data['High'], data['Low'], data['Close'], data['Volume'])
         if result is not None:
             return result
+    # Manual VWAP (daily reset approximation)
     typical_price = (data['High'] + data['Low'] + data['Close']) / 3
     vwap = (typical_price * data['Volume']).cumsum() / data['Volume'].cumsum()
     return vwap
 
 
 def detecter_supports_resistances(data, window=20, nb_levels=5):
-    """Détecte les supports et résistances clés"""
+    """DÃ©tecte les supports et rÃ©sistances clÃ©s"""
     close = data['Close'].values
     high = data['High'].values
     low = data['Low'].values
@@ -498,14 +494,18 @@ def detecter_supports_resistances(data, window=20, nb_levels=5):
     resistances = []
 
     for i in range(window, len(close) - window):
+        # Support : point bas local
         if low[i] == min(low[i-window:i+window+1]):
             supports.append(low[i])
+        # RÃ©sistance : point haut local
         if high[i] == max(high[i-window:i+window+1]):
             resistances.append(high[i])
 
+    # Regrouper les niveaux proches (clustering)
     supports = _cluster_levels(supports, tolerance=0.02)
     resistances = _cluster_levels(resistances, tolerance=0.02)
 
+    # Garder les plus pertinents (proches du prix actuel)
     prix_actuel = close[-1]
     supports = sorted(supports, key=lambda x: abs(x - prix_actuel))[:nb_levels]
     resistances = sorted(resistances, key=lambda x: abs(x - prix_actuel))[:nb_levels]
@@ -523,12 +523,12 @@ def _cluster_levels(levels, tolerance=0.02):
         if (level - clustered[-1]) / clustered[-1] > tolerance:
             clustered.append(level)
         else:
-            clustered[-1] = (clustered[-1] + level) / 2
+            clustered[-1] = (clustered[-1] + level) / 2  # Moyenne
     return clustered
 
 
 def detecter_divergences(data, lookback=14):
-    """Détection améliorée des divergences RSI et MACD"""
+    """DÃ©tection amÃ©liorÃ©e des divergences RSI et MACD"""
     divergences = {'rsi': None, 'macd': None, 'force': 0}
     if len(data) < lookback + 5:
         return divergences
@@ -537,11 +537,13 @@ def detecter_divergences(data, lookback=14):
     rsi = data['RSI'].values
     macd = data['MACD'].values
 
+    # Chercher les 2 derniers creux et sommets
     try:
         recent = close[-lookback:]
         recent_rsi = rsi[-lookback:]
         recent_macd = macd[-lookback:]
 
+        # Divergence haussiÃ¨re (prix fait lower low, RSI fait higher low)
         prix_lows = []
         rsi_lows = []
         for i in range(2, lookback - 2):
@@ -551,6 +553,7 @@ def detecter_divergences(data, lookback=14):
         if len(prix_lows) >= 2:
             last = prix_lows[-1]
             prev = prix_lows[-2]
+            # Prix lower low + RSI higher low = divergence haussiÃ¨re
             if last[1] < prev[1] and last[2] > prev[2]:
                 divergences['rsi'] = "HAUSSIERE"
                 divergences['force'] = abs(last[2] - prev[2])
@@ -558,6 +561,7 @@ def detecter_divergences(data, lookback=14):
                 divergences['macd'] = "HAUSSIERE"
                 divergences['force'] = max(divergences['force'], abs(last[3] - prev[3]))
 
+        # Divergence baissiÃ¨re (prix fait higher high, RSI fait lower high)
         prix_highs = []
         for i in range(2, lookback - 2):
             if recent[i] >= max(recent[i-2:i]) and recent[i] >= max(recent[i+1:i+3]):
@@ -578,39 +582,60 @@ def detecter_divergences(data, lookback=14):
     return divergences
 
 
-# ══════════════════════════════════════════════════════════
-# MACHINE LEARNING v5.0
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# MACHINE LEARNING v5.0 (LightGBM + Feature Engineering)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-@st.cache_data(ttl=3600, show_spinner="🤖 Entraînement ML...")
+@st.cache_data(ttl=3600, show_spinner="ðŸ¤– EntraÃ®nement ML...")
 def entrainer_modele_ml(ticker, data):
-    """Entraîne un modèle ML pour prédire le mouvement à 5 jours"""
+    """EntraÃ®ne un modÃ¨le ML pour prÃ©dire le mouvement Ã  5 jours"""
     try:
         if len(data) < 120:
             return None
 
         df = data.copy()
 
+        # --- FEATURE ENGINEERING ---
+        # Retours
         df['return_1d'] = df['Close'].pct_change(1)
         df['return_3d'] = df['Close'].pct_change(3)
         df['return_5d'] = df['Close'].pct_change(5)
         df['return_10d'] = df['Close'].pct_change(10)
+
+        # VolatilitÃ©
         df['volatility_10'] = df['return_1d'].rolling(10).std()
         df['volatility_20'] = df['return_1d'].rolling(20).std()
+
+        # Momentum
         df['momentum_10'] = df['Close'] / df['Close'].shift(10) - 1
         df['momentum_20'] = df['Close'] / df['Close'].shift(20) - 1
+
+        # Prix relatif aux MA
         df['price_vs_ma20'] = df['Close'] / df['Close'].rolling(20).mean() - 1
         df['price_vs_ma50'] = df['Close'] / df['Close'].rolling(50).mean() - 1
+
+        # Volume relatif
         df['vol_ratio'] = df['Volume'] / df['Volume'].rolling(20).mean()
+
+        # RSI momentum
         df['rsi_change'] = df['RSI'].diff(3)
+
+        # MACD momentum
         df['macd_hist'] = df['MACD'] - df['MACD_Signal']
         df['macd_hist_change'] = df['macd_hist'].diff(3)
+
+        # Bollinger position
         bb_range = df['BB_Upper'] - df['BB_Lower']
         df['bb_position'] = (df['Close'] - df['BB_Lower']) / bb_range
+
+        # ATR relatif
         df['atr_pct'] = df['ATR'] / df['Close'] * 100
 
+        # --- TARGET ---
+        # 1 si le prix monte de >1% dans les 5 prochains jours
         df['target'] = (df['Close'].shift(-5) / df['Close'] - 1 > 0.01).astype(int)
 
+        # Features
         features = [
             'RSI', 'Stoch_K', 'ADX', 'return_1d', 'return_3d', 'return_5d',
             'return_10d', 'volatility_10', 'volatility_20', 'momentum_10',
@@ -618,6 +643,7 @@ def entrainer_modele_ml(ticker, data):
             'rsi_change', 'macd_hist', 'macd_hist_change', 'bb_position', 'atr_pct'
         ]
 
+        # Nettoyer
         df_clean = df[features + ['target']].dropna()
         if len(df_clean) < 60:
             return None
@@ -625,14 +651,17 @@ def entrainer_modele_ml(ticker, data):
         X = df_clean[features]
         y = df_clean['target']
 
+        # Train/test split temporel (80/20)
         split = int(len(X) * 0.8)
         X_train, X_test = X.iloc[:split], X.iloc[split:]
         y_train, y_test = y.iloc[:split], y.iloc[split:]
 
+        # Scaler
         scaler = StandardScaler()
         X_train_scaled = scaler.fit_transform(X_train)
         X_test_scaled = scaler.transform(X_test)
 
+        # ModÃ¨le
         if HAS_LGBM:
             model = lgb.LGBMClassifier(
                 n_estimators=200, max_depth=6, learning_rate=0.05,
@@ -647,13 +676,19 @@ def entrainer_modele_ml(ticker, data):
 
         model.fit(X_train_scaled, y_train)
 
+        # Ã‰valuation
         y_pred = model.predict(X_test_scaled)
         accuracy = accuracy_score(y_test, y_pred)
 
+        # PrÃ©diction actuelle
         X_current = scaler.transform(X.iloc[[-1]])
         proba = model.predict_proba(X_current)[0]
 
-        importance = dict(zip(features, model.feature_importances_))
+        # Feature importance
+        if HAS_LGBM:
+            importance = dict(zip(features, model.feature_importances_))
+        else:
+            importance = dict(zip(features, model.feature_importances_))
         top_features = sorted(importance.items(), key=lambda x: x[1], reverse=True)[:5]
 
         return {
@@ -669,11 +704,11 @@ def entrainer_modele_ml(ticker, data):
         return None
 
 
-# ══════════════════════════════════════════════════════════
-# MOTEUR MACRO v5.0
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# MOTEUR MACRO v5.0 (identique v4.1 + amÃ©liorations)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-@st.cache_data(ttl=600, show_spinner="🌍 Chargement macro...")
+@st.cache_data(ttl=600, show_spinner="ðŸŒ Chargement macro...")
 def fetch_macro_data():
     data = {}
     details = []
@@ -684,6 +719,7 @@ def fetch_macro_data():
             d.columns = d.columns.get_level_values(0)
         return d
 
+    # Parallel fetching pour accÃ©lÃ©rer
     tickers_macro = {
         'dxy': "DX-Y.NYB",
         'oil': "CL=F",
@@ -716,12 +752,12 @@ def fetch_macro_data():
             elif var_5j > 0.5: score -= 2
             if prix > ma20: score -= 3
             data['dxy'] = {'prix': prix, 'ma20': ma20, 'var_5j': var_5j, 'score': max(-10, min(10, score))}
-            emoji = "✅" if score > 0 else "❌"
+            emoji = "âœ…" if score > 0 else "âŒ"
             details.append(f"{emoji} Dollar: {round(prix, 1)} (5j: {round(var_5j, 1)}%)")
     except:
         data['dxy'] = {'score': 0}
 
-    # 2. PÉTROLE
+    # 2. PÃ‰TROLE
     try:
         oil = fetched.get('oil', pd.DataFrame())
         if len(oil) >= 20:
@@ -735,8 +771,8 @@ def fetch_macro_data():
             if prix > 90: score += 2
             elif prix < 65: score -= 2
             data['oil'] = {'prix': prix, 'score': max(-10, min(10, score))}
-            emoji = "✅" if score > 0 else "❌"
-            details.append(f"{emoji} Pétrole ${round(prix, 1)}")
+            emoji = "âœ…" if score > 0 else "âŒ"
+            details.append(f"{emoji} PÃ©trole ${round(prix, 1)}")
     except:
         data['oil'] = {'score': 0}
 
@@ -752,7 +788,7 @@ def fetch_macro_data():
             if prix > 4.5: score -= 2
             elif prix < 3.5: score += 2
             data['yields'] = {'prix': prix, 'score': max(-10, min(10, score))}
-            emoji = "✅" if score > 0 else "❌"
+            emoji = "âœ…" if score > 0 else "âŒ"
             details.append(f"{emoji} Taux 10Y: {round(prix, 2)}%")
     except:
         data['yields'] = {'score': 0}
@@ -768,7 +804,7 @@ def fetch_macro_data():
             elif prix < 15: score += 3
             elif prix < 18: score += 1
             data['vix'] = {'prix': prix, 'score': max(-10, min(10, score))}
-            emoji = "✅" if score > 0 else "❌"
+            emoji = "âœ…" if score > 0 else "âŒ"
             details.append(f"{emoji} VIX: {round(prix, 1)}")
     except:
         data['vix'] = {'score': 0}
@@ -781,7 +817,7 @@ def fetch_macro_data():
             fg_label = r.json()["data"][0]["value_classification"]
             score = (fg_value - 50) / 5
             data['fear_greed'] = {'value': fg_value, 'label': fg_label, 'score': max(-10, min(10, score))}
-            details.append(f"😱 Fear & Greed: {fg_value}/100 ({fg_label})")
+            details.append(f"ðŸ˜± Fear & Greed: {fg_value}/100 ({fg_label})")
         else:
             data['fear_greed'] = {'value': 50, 'score': 0}
     except:
@@ -799,7 +835,7 @@ def fetch_macro_data():
             elif current_rate < -0.0001: score += 3
             elif current_rate < 0: score += 1
             data['funding'] = {'current': current_rate * 100, 'score': max(-10, min(10, score))}
-            details.append(f"📊 Funding BTC: {round(current_rate * 100, 4)}%")
+            details.append(f"ðŸ“Š Funding BTC: {round(current_rate * 100, 4)}%")
     except:
         data['funding'] = {'current': 0, 'score': 0}
 
@@ -814,7 +850,7 @@ def fetch_macro_data():
             elif price_change < -2: score -= 3
             elif price_change < 0: score -= 1
             data['etf_btc'] = {'price_change': price_change, 'score': max(-10, min(10, score))}
-            emoji = "✅" if score > 0 else "❌"
+            emoji = "âœ…" if score > 0 else "âŒ"
             details.append(f"{emoji} ETF BTC: {round(price_change, 1)}% (5j)")
     except:
         data['etf_btc'] = {'score': 0}
@@ -832,18 +868,18 @@ def fetch_macro_data():
             if var_5j > 2: score += 2
             elif var_5j < -2: score -= 2
             data['spy'] = {'prix': prix, 'var_5j': var_5j, 'score': max(-10, min(10, score))}
-            emoji = "✅" if score > 0 else "❌"
+            emoji = "âœ…" if score > 0 else "âŒ"
             details.append(f"{emoji} S&P 500: {round(var_5j, 1)}% (5j)")
     except:
         data['spy'] = {'score': 0}
 
-    # 9. OPEN INTEREST BTC
+    # 9. OPEN INTEREST BTC (NOUVEAU v5.0)
     try:
         r = requests.get("https://fapi.binance.com/fapi/v1/openInterest", params={"symbol": "BTCUSDT"}, timeout=5)
         if r.status_code == 200:
             oi = float(r.json()["openInterest"])
             data['open_interest'] = {'value': oi}
-            details.append(f"📈 OI BTC: {round(oi, 0)} BTC")
+            details.append(f"ðŸ“ˆ OI BTC: {round(oi, 0)} BTC")
     except:
         pass
 
@@ -879,11 +915,11 @@ def calculate_macro_score(macro_data, ticker, categorie):
     return max(-10, min(10, composite)), breakdown
 
 
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # DIVERGENCE OR/BITCOIN
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-@st.cache_data(ttl=600, show_spinner="🔗 Divergence Or/Bitcoin...")
+@st.cache_data(ttl=600, show_spinner="ðŸ”— Divergence Or/Bitcoin...")
 def get_divergence_or_btc():
     try:
         or_data = yf.download("GC=F", period="30d", interval="1d", progress=False)
@@ -904,7 +940,7 @@ def get_divergence_or_btc():
 def indicateur_divergence_or_btc(ticker):
     data = get_divergence_or_btc()
     if data is None:
-        return 0, "Données indisponibles"
+        return 0, "DonnÃ©es indisponibles"
     var_or = data['var_or']
     var_btc = data['var_btc']
     ecart = data['ecart']
@@ -912,30 +948,30 @@ def indicateur_divergence_or_btc(ticker):
         if ecart < -5:
             return 1, f"BTC +{round(var_btc, 1)}% vs Or -> Or devrait rattraper"
         elif ecart > 5:
-            return -1, f"Or +{round(var_or, 1)}% vs BTC -> Or en excès"
+            return -1, f"Or +{round(var_or, 1)}% vs BTC -> Or en excÃ¨s"
         else:
-            return 0, f"Écart neutre ({round(ecart, 1)}%)"
+            return 0, f"Ã‰cart neutre ({round(ecart, 1)}%)"
     elif ticker in ["BTC-USD", "ETH-USD", "SOL-USD"]:
         if ecart > 5:
             return 1, f"Or +{round(var_or, 1)}% vs BTC -> Crypto devrait rattraper"
         elif ecart < -5:
-            return -1, f"BTC +{round(var_btc, 1)}% vs Or -> Crypto en excès"
+            return -1, f"BTC +{round(var_btc, 1)}% vs Or -> Crypto en excÃ¨s"
         else:
-            return 0, f"Écart neutre ({round(ecart, 1)}%)"
+            return 0, f"Ã‰cart neutre ({round(ecart, 1)}%)"
     else:
         if var_or > 3 and var_btc > 3:
             return 1, "Or et BTC montent -> Fuite vers refuges"
         elif var_or < -3 and var_btc < -3:
-            return -1, "Or et BTC baissent -> Confiance marché"
+            return -1, "Or et BTC baissent -> Confiance marchÃ©"
         else:
             return 0, "Pas de signal clair"
 
 
-# ══════════════════════════════════════════════════════════
-# NLP NEWS SENTIMENT
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# NLP NEWS SENTIMENT (amÃ©liorÃ© v5.0)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-@st.cache_data(ttl=600, show_spinner="📰 Analyse des news...")
+@st.cache_data(ttl=600, show_spinner="ðŸ“° Analyse des news...")
 def get_news_sentiment(ticker):
     try:
         keywords = NEWS_KEYWORDS.get(ticker, [ticker])
@@ -949,7 +985,7 @@ def get_news_sentiment(ticker):
         scores = []
         headlines = []
 
-        for entry in feed.entries[:15]:
+        for entry in feed.entries[:15]:  # Plus d'articles
             title = entry.get('title', '')
             compound = vader.polarity_scores(title)['compound']
             title_lower = title.lower()
@@ -961,8 +997,9 @@ def get_news_sentiment(ticker):
             headlines.append({'title': title, 'score': final})
 
         if not scores:
-            return {'score': 0, 'nb_articles': 0, 'details': "Analyse échouée", 'headlines': []}
+            return {'score': 0, 'nb_articles': 0, 'details': "Analyse Ã©chouÃ©e", 'headlines': []}
 
+        # PondÃ©ration : articles rÃ©cents comptent plus
         weights = np.linspace(1.5, 0.5, len(scores))
         weighted_avg = np.average(scores, weights=weights)
         final_score = max(-10, min(10, weighted_avg * 10))
@@ -970,7 +1007,7 @@ def get_news_sentiment(ticker):
         bull_articles = sum(1 for s in scores if s > 0.1)
         bear_articles = sum(1 for s in scores if s < -0.1)
         neutral_articles = len(scores) - bull_articles - bear_articles
-        details = f"{bull_articles} positifs / {neutral_articles} neutres / {bear_articles} négatifs"
+        details = f"{bull_articles} positifs / {neutral_articles} neutres / {bear_articles} nÃ©gatifs"
 
         return {
             'score': final_score,
@@ -982,11 +1019,11 @@ def get_news_sentiment(ticker):
         return {'score': 0, 'nb_articles': 0, 'details': "Erreur", 'headlines': []}
 
 
-# ══════════════════════════════════════════════════════════
-# ON-CHAIN
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ON-CHAIN (amÃ©liorÃ© v5.0)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-@st.cache_data(ttl=900, show_spinner="⛓️ Analyse on-chain...")
+@st.cache_data(ttl=900, show_spinner="â›“ï¸ Analyse on-chain...")
 def get_onchain_score(ticker):
     if ticker not in ['BTC-USD', 'ETH-USD', 'SOL-USD']:
         return {'score': 0, 'details': []}
@@ -994,6 +1031,7 @@ def get_onchain_score(ticker):
     details = []
 
     if ticker == 'BTC-USD':
+        # Fees
         try:
             r = requests.get("https://mempool.space/api/v1/fees/recommended", timeout=5)
             if r.status_code == 200:
@@ -1001,15 +1039,16 @@ def get_onchain_score(ticker):
                 fastest = fees.get('fastestFee', 0)
                 if fastest > 100:
                     score -= 2
-                    details.append(f"🔴 Fees élevés ({fastest} sat/vB)")
+                    details.append(f"ðŸ”´ Fees Ã©levÃ©s ({fastest} sat/vB)")
                 elif fastest < 10:
                     score += 1
-                    details.append(f"🟢 Fees bas ({fastest} sat/vB)")
+                    details.append(f"ðŸŸ¢ Fees bas ({fastest} sat/vB)")
                 else:
-                    details.append(f"⚪ Fees normaux ({fastest} sat/vB)")
+                    details.append(f"âšª Fees normaux ({fastest} sat/vB)")
         except:
             pass
 
+        # Mempool
         try:
             r = requests.get("https://mempool.space/api/mempool", timeout=5)
             if r.status_code == 200:
@@ -1017,15 +1056,16 @@ def get_onchain_score(ticker):
                 count = mempool.get('count', 0)
                 if count > 100000:
                     score -= 1
-                    details.append(f"🔴 Mempool congestionné ({count} TX)")
+                    details.append(f"ðŸ”´ Mempool congestionnÃ© ({count} TX)")
                 elif count < 10000:
                     score += 1
-                    details.append(f"🟢 Mempool calme ({count} TX)")
+                    details.append(f"ðŸŸ¢ Mempool calme ({count} TX)")
                 else:
-                    details.append(f"⚪ Mempool normal ({count} TX)")
+                    details.append(f"âšª Mempool normal ({count} TX)")
         except:
             pass
 
+        # Hashrate
         try:
             r = requests.get("https://api.blockchain.info/charts/hash-rate?timespan=30days&format=json", timeout=10)
             if r.status_code == 200:
@@ -1036,15 +1076,16 @@ def get_onchain_score(ticker):
                     change = (recent - earlier) / earlier * 100
                     if change > 5:
                         score += 2
-                        details.append(f"🟢 Hashrate +{round(change, 1)}%")
+                        details.append(f"ðŸŸ¢ Hashrate +{round(change, 1)}%")
                     elif change < -5:
                         score -= 2
-                        details.append(f"🔴 Hashrate {round(change, 1)}%")
+                        details.append(f"ðŸ”´ Hashrate {round(change, 1)}%")
                     else:
-                        details.append(f"⚪ Hashrate stable ({round(change, 1)}%)")
+                        details.append(f"âšª Hashrate stable ({round(change, 1)}%)")
         except:
             pass
 
+    # DeFi TVL
     try:
         r = requests.get("https://api.llama.fi/v2/historicalChainTvl", timeout=10)
         if r.status_code == 200:
@@ -1056,15 +1097,16 @@ def get_onchain_score(ticker):
                 tvl_b = recent / 1e9
                 if change > 5:
                     score += 2
-                    details.append(f"🟢 DeFi TVL +{round(change, 1)}% (${round(tvl_b, 0)}B)")
+                    details.append(f"ðŸŸ¢ DeFi TVL +{round(change, 1)}% (${round(tvl_b, 0)}B)")
                 elif change < -5:
                     score -= 2
-                    details.append(f"🔴 DeFi TVL {round(change, 1)}% (${round(tvl_b, 0)}B)")
+                    details.append(f"ðŸ”´ DeFi TVL {round(change, 1)}% (${round(tvl_b, 0)}B)")
                 else:
-                    details.append(f"⚪ DeFi TVL stable (${round(tvl_b, 0)}B)")
+                    details.append(f"âšª DeFi TVL stable (${round(tvl_b, 0)}B)")
     except:
         pass
 
+    # Long/Short Ratio (NOUVEAU v5.0)
     if ticker == 'BTC-USD':
         try:
             r = requests.get("https://fapi.binance.com/futures/data/globalLongShortAccountRatio",
@@ -1075,39 +1117,44 @@ def get_onchain_score(ticker):
                     ls_ratio = float(ratio_data[0]['longShortRatio'])
                     if ls_ratio > 2.0:
                         score -= 2
-                        details.append(f"🔴 L/S Ratio: {round(ls_ratio, 2)} (trop de longs)")
+                        details.append(f"ðŸ”´ L/S Ratio: {round(ls_ratio, 2)} (trop de longs)")
                     elif ls_ratio < 0.8:
                         score += 2
-                        details.append(f"🟢 L/S Ratio: {round(ls_ratio, 2)} (shorts dominants)")
+                        details.append(f"ðŸŸ¢ L/S Ratio: {round(ls_ratio, 2)} (shorts dominants)")
                     else:
-                        details.append(f"⚪ L/S Ratio: {round(ls_ratio, 2)}")
+                        details.append(f"âšª L/S Ratio: {round(ls_ratio, 2)}")
         except:
             pass
 
     return {'score': max(-10, min(10, score)), 'details': details}
 
 
-# ══════════════════════════════════════════════════════════
-# TÉLÉCHARGEMENT (hybride Yahoo + ccxt)
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# TÃ‰LÃ‰CHARGEMENT (hybride Yahoo + ccxt)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-@st.cache_data(ttl=300, show_spinner="📥 Chargement...")
+@st.cache_data(ttl=300, show_spinner="ðŸ“¥ Chargement...")
 def telecharger_donnees(ticker):
+    """TÃ©lÃ©charge les donnÃ©es â€” ccxt pour crypto, Yahoo pour le reste"""
+    # Essayer ccxt d'abord pour crypto (plus fiable)
     if HAS_CCXT and ticker in CCXT_SYMBOLS:
         data = get_realtime_data_ccxt(CCXT_SYMBOLS[ticker], '1d', 365)
         if data is not None and not data.empty:
             return data
+
+    # Fallback Yahoo Finance
     data = yf.download(ticker, period="1y", interval="1d", progress=False)
     if isinstance(data.columns, pd.MultiIndex):
         data.columns = data.columns.get_level_values(0)
     return data
 
 
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # CALCULER TOUS LES INDICATEURS
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 def calculer_tout(data):
+    """Calcule tous les indicateurs techniques"""
     data['RSI'] = calc_rsi(data['Close'])
     data['Stoch_K'], data['Stoch_D'] = calc_stochastique(data)
     data['MACD'], data['MACD_Signal'] = calc_macd(data['Close'])
@@ -1121,6 +1168,7 @@ def calculer_tout(data):
     data['Vol_Moy_20'] = data['Volume'].rolling(20).mean()
     data['VWAP'] = calc_vwap(data)
 
+    # Ichimoku
     ichimoku = calc_ichimoku(data)
     if ichimoku is not None:
         data['Ichi_Tenkan'] = ichimoku['tenkan']
@@ -1131,12 +1179,14 @@ def calculer_tout(data):
     return data
 
 
-# ══════════════════════════════════════════════════════════
-# STOP-LOSS / TAKE-PROFIT
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# STOP-LOSS / TAKE-PROFIT (amÃ©liorÃ© v5.0)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 def calculer_sl_tp(prix, atr, action, supports=None, resistances=None, ratio_risque=1.5, ratio_reward=2.5):
+    """SL/TP intelligent â€” utilise les supports/rÃ©sistances si disponibles"""
     if action == "ACHAT":
+        # SL sous le support le plus proche ou ATR
         if supports:
             support_proche = max([s for s in supports if s < prix], default=None)
             sl_support = support_proche * 0.998 if support_proche else None
@@ -1145,6 +1195,7 @@ def calculer_sl_tp(prix, atr, action, supports=None, resistances=None, ratio_ris
         else:
             stop_loss = prix - (ratio_risque * atr)
 
+        # TP Ã  la rÃ©sistance la plus proche ou ATR
         if resistances:
             resistance_proche = min([r for r in resistances if r > prix], default=None)
             tp_resistance = resistance_proche * 0.998 if resistance_proche else None
@@ -1199,16 +1250,18 @@ def calculer_taille_position(capital, risque_pct_capital, prix, stop_loss):
     return nb_unites, taille_position
 
 
-# ══════════════════════════════════════════════════════════
-# MULTI-TIMEFRAME
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# MULTI-TIMEFRAME (amÃ©liorÃ© v5.0)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-@st.cache_data(ttl=300, show_spinner="📥 Multi-timeframe...")
+@st.cache_data(ttl=300, show_spinner="ðŸ“¥ Multi-timeframe...")
 def telecharger_donnees_4h(ticker):
+    # ccxt pour crypto
     if HAS_CCXT and ticker in CCXT_SYMBOLS:
         data = get_realtime_data_ccxt(CCXT_SYMBOLS[ticker], '4h', 200)
         if data is not None and not data.empty:
             return data
+    # Fallback Yahoo
     data = yf.download(ticker, period="60d", interval="1h", progress=False)
     if isinstance(data.columns, pd.MultiIndex):
         data.columns = data.columns.get_level_values(0)
@@ -1220,7 +1273,7 @@ def telecharger_donnees_4h(ticker):
     }).dropna()
     return data_4h
 
-@st.cache_data(ttl=300, show_spinner="📥 Weekly...")
+@st.cache_data(ttl=300, show_spinner="ðŸ“¥ Weekly...")
 def telecharger_donnees_weekly(ticker):
     data = yf.download(ticker, period="2y", interval="1wk", progress=False)
     if isinstance(data.columns, pd.MultiIndex):
@@ -1228,8 +1281,10 @@ def telecharger_donnees_weekly(ticker):
     return data
 
 def analyser_mtf(ticker):
+    """Analyse Multi-Timeframe : 4h + Weekly"""
     result = {'4h': None, 'weekly': None, 'consensus': "NEUTRE"}
 
+    # 4H
     try:
         data_4h = telecharger_donnees_4h(ticker)
         if not data_4h.empty and len(data_4h) >= 30:
@@ -1255,6 +1310,7 @@ def analyser_mtf(ticker):
     except:
         pass
 
+    # WEEKLY
     try:
         data_w = telecharger_donnees_weekly(ticker)
         if not data_w.empty and len(data_w) >= 20:
@@ -1275,6 +1331,7 @@ def analyser_mtf(ticker):
     except:
         pass
 
+    # CONSENSUS
     tendances = []
     if result['4h']: tendances.append(result['4h']['tendance'])
     if result['weekly']: tendances.append(result['weekly']['tendance'])
@@ -1287,9 +1344,9 @@ def analyser_mtf(ticker):
     return result
 
 
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # TIMING
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 def evaluer_timing(nom_actif, ticker):
     tz_suisse = pytz.timezone("Europe/Zurich")
@@ -1314,9 +1371,9 @@ def evaluer_timing(nom_actif, ticker):
     }
 
 
-# ══════════════════════════════════════════════════════════
-# ÉVALUATION v5.0 COMPLÈTE
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Ã‰VALUATION v5.0 COMPLÃˆTE
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 def get_val(v):
     if hasattr(v, 'iloc'):
@@ -1324,6 +1381,7 @@ def get_val(v):
     return float(v)
 
 def evaluer_v50(data, ticker, nom_actif, macro_data):
+    """Ã‰valuation complÃ¨te v5.0 avec tous les nouveaux indicateurs"""
     if len(data) < 2:
         return 0, 0, [], 0, 0, True, None, None, None
 
@@ -1334,52 +1392,52 @@ def evaluer_v50(data, ticker, nom_actif, macro_data):
     atr_val = get_val(derniere['ATR']) if not np.isnan(get_val(derniere['ATR'])) else 0
 
     if np.isnan(adx_val) or adx_val < SEUIL_ADX:
-        details = [("ADX", "PLAT", f"ADX = {round(adx_val, 1)} < {SEUIL_ADX} -> Marché plat")]
+        details = [("ADX", "PLAT", f"ADX = {round(adx_val, 1)} < {SEUIL_ADX} -> MarchÃ© plat")]
         return 0, 0, details, prix, adx_val, True, None, None, None
 
     score_achat = 0
     score_vente = 0
     details = []
 
-    # RSI
+    # â•â•â• RSI â•â•â•
     rsi_now = get_val(derniere['RSI'])
     rsi_avant = get_val(avant['RSI'])
     if rsi_now < 30 and rsi_avant < 30:
         score_achat += POIDS["RSI"]
-        details.append(("RSI", "ACHAT", f"Survendu confirmé ({round(rsi_now, 1)}) -> +{POIDS['RSI']} pts"))
+        details.append(("RSI", "ACHAT", f"Survendu confirmÃ© ({round(rsi_now, 1)}) -> +{POIDS['RSI']} pts"))
     elif rsi_now > 70 and rsi_avant > 70:
         score_vente += POIDS["RSI"]
-        details.append(("RSI", "VENTE", f"Suracheté confirmé ({round(rsi_now, 1)}) -> +{POIDS['RSI']} pts"))
+        details.append(("RSI", "VENTE", f"SurachetÃ© confirmÃ© ({round(rsi_now, 1)}) -> +{POIDS['RSI']} pts"))
     else:
         details.append(("RSI", "NEUTRE", f"RSI = {round(rsi_now, 1)}"))
 
-    # STOCH
+    # â•â•â• STOCH â•â•â•
     stoch_now = get_val(derniere['Stoch_K'])
     stoch_avant = get_val(avant['Stoch_K'])
     if stoch_now < 20 and stoch_avant < 20:
         score_achat += POIDS["STOCH"]
-        details.append(("STOCH", "ACHAT", f"Survendu confirmé -> +{POIDS['STOCH']} pts"))
+        details.append(("STOCH", "ACHAT", f"Survendu confirmÃ© -> +{POIDS['STOCH']} pts"))
     elif stoch_now > 80 and stoch_avant > 80:
         score_vente += POIDS["STOCH"]
-        details.append(("STOCH", "VENTE", f"Suracheté confirmé -> +{POIDS['STOCH']} pts"))
+        details.append(("STOCH", "VENTE", f"SurachetÃ© confirmÃ© -> +{POIDS['STOCH']} pts"))
     else:
         details.append(("STOCH", "NEUTRE", f"Stoch = {round(stoch_now, 1)}"))
 
-    # MACD
+    # â•â•â• MACD â•â•â•
     macd_now = get_val(derniere['MACD'])
     signal_now = get_val(derniere['MACD_Signal'])
     macd_av = get_val(avant['MACD'])
     signal_av = get_val(avant['MACD_Signal'])
     if macd_now > signal_now and macd_av > signal_av:
         score_achat += POIDS["MACD"]
-        details.append(("MACD", "ACHAT", f"Au-dessus signal (confirmé) -> +{POIDS['MACD']} pts"))
+        details.append(("MACD", "ACHAT", f"Au-dessus signal (confirmÃ©) -> +{POIDS['MACD']} pts"))
     elif macd_now < signal_now and macd_av < signal_av:
         score_vente += POIDS["MACD"]
-        details.append(("MACD", "VENTE", f"En dessous signal (confirmé) -> +{POIDS['MACD']} pts"))
+        details.append(("MACD", "VENTE", f"En dessous signal (confirmÃ©) -> +{POIDS['MACD']} pts"))
     else:
-        details.append(("MACD", "NEUTRE", "Croisement récent"))
+        details.append(("MACD", "NEUTRE", "Croisement rÃ©cent"))
 
-    # FIBO
+    # â•â•â• FIBO â•â•â•
     fib_618 = get_val(derniere['Fib_618'])
     fib_382 = get_val(derniere['Fib_382'])
     if prix <= fib_618:
@@ -1391,7 +1449,7 @@ def evaluer_v50(data, ticker, nom_actif, macro_data):
     else:
         details.append(("FIBO", "NEUTRE", "Entre les niveaux"))
 
-    # MA200
+    # â•â•â• MA200 â•â•â•
     ma200 = get_val(derniere['MA_200'])
     if not np.isnan(ma200):
         if prix <= ma200 * 1.02:
@@ -1403,9 +1461,9 @@ def evaluer_v50(data, ticker, nom_actif, macro_data):
         else:
             details.append(("MA200", "NEUTRE", "Zone normale"))
     else:
-        details.append(("MA200", "NEUTRE", "Pas assez de données"))
+        details.append(("MA200", "NEUTRE", "Pas assez de donnÃ©es"))
 
-    # VOLUME
+    # â•â•â• VOLUME â•â•â•
     vol_now = get_val(derniere['Volume'])
     vol_moy = get_val(derniere['Vol_Moy_20'])
     if not np.isnan(vol_moy) and vol_moy > 0:
@@ -1422,9 +1480,9 @@ def evaluer_v50(data, ticker, nom_actif, macro_data):
         else:
             details.append(("VOLUME", "NEUTRE", f"Normal ({round(ratio_vol, 1)}x)"))
     else:
-        details.append(("VOLUME", "NEUTRE", "Pas de données"))
+        details.append(("VOLUME", "NEUTRE", "Pas de donnÃ©es"))
 
-    # BOLLINGER
+    # â•â•â• BOLLINGER â•â•â•
     bb_upper = get_val(derniere['BB_Upper'])
     bb_lower = get_val(derniere['BB_Lower'])
     if not np.isnan(bb_upper) and not np.isnan(bb_lower):
@@ -1437,18 +1495,18 @@ def evaluer_v50(data, ticker, nom_actif, macro_data):
         else:
             details.append(("BOLLINGER", "NEUTRE", "Entre les bandes"))
 
-    # DIVERGENCES
+    # â•â•â• DIVERGENCES (amÃ©liorÃ©) â•â•â•
     divergences = detecter_divergences(data)
     if divergences['rsi'] == "HAUSSIERE" or divergences['macd'] == "HAUSSIERE":
         score_achat += POIDS["DIVERGENCE"]
-        details.append(("DIVERGENCE", "ACHAT", f"Divergence haussière -> +{POIDS['DIVERGENCE']} pts"))
+        details.append(("DIVERGENCE", "ACHAT", f"Divergence haussiÃ¨re -> +{POIDS['DIVERGENCE']} pts"))
     elif divergences['rsi'] == "BAISSIERE" or divergences['macd'] == "BAISSIERE":
         score_vente += POIDS["DIVERGENCE"]
-        details.append(("DIVERGENCE", "VENTE", f"Divergence baissière -> +{POIDS['DIVERGENCE']} pts"))
+        details.append(("DIVERGENCE", "VENTE", f"Divergence baissiÃ¨re -> +{POIDS['DIVERGENCE']} pts"))
     else:
         details.append(("DIVERGENCE", "NEUTRE", "Pas de divergence"))
 
-    # OR/BTC
+    # â•â•â• OR/BTC â•â•â•
     signal_or_btc, msg_or_btc = indicateur_divergence_or_btc(ticker)
     if signal_or_btc == 1:
         score_achat += POIDS["OR_BTC"]
@@ -1459,7 +1517,7 @@ def evaluer_v50(data, ticker, nom_actif, macro_data):
     else:
         details.append(("OR/BTC", "NEUTRE", msg_or_btc))
 
-    # MACRO
+    # â•â•â• MACRO â•â•â•
     categorie = ACTIF_CATEGORIE.get(nom_actif, "forex")
     if macro_data:
         macro_score, _ = calculate_macro_score(macro_data, ticker, categorie)
@@ -1471,14 +1529,14 @@ def evaluer_v50(data, ticker, nom_actif, macro_data):
             details.append(("MACRO", "VENTE", f"Score {round(macro_score, 1)}/10 -> +{POIDS['MACRO']} pts"))
         elif macro_score >= 1:
             score_achat += POIDS["MACRO"] * 0.4
-            details.append(("MACRO", "ACHAT", f"Léger + ({round(macro_score, 1)}) -> +{round(POIDS['MACRO'] * 0.4, 1)} pts"))
+            details.append(("MACRO", "ACHAT", f"LÃ©ger + ({round(macro_score, 1)}) -> +{round(POIDS['MACRO'] * 0.4, 1)} pts"))
         elif macro_score <= -1:
             score_vente += POIDS["MACRO"] * 0.4
-            details.append(("MACRO", "VENTE", f"Léger - ({round(macro_score, 1)}) -> +{round(POIDS['MACRO'] * 0.4, 1)} pts"))
+            details.append(("MACRO", "VENTE", f"LÃ©ger - ({round(macro_score, 1)}) -> +{round(POIDS['MACRO'] * 0.4, 1)} pts"))
         else:
             details.append(("MACRO", "NEUTRE", f"Score {round(macro_score, 1)}/10"))
 
-    # SENTIMENT
+    # â•â•â• SENTIMENT â•â•â•
     if macro_data and 'fear_greed' in macro_data:
         fg_value = macro_data['fear_greed'].get('value', 50)
         if fg_value < 25:
@@ -1496,7 +1554,7 @@ def evaluer_v50(data, ticker, nom_actif, macro_data):
         else:
             details.append(("SENTIMENT", "NEUTRE", f"F&G = {fg_value}"))
 
-    # NEWS NLP
+    # â•â•â• NEWS NLP â•â•â•
     news = get_news_sentiment(ticker)
     if news and news['nb_articles'] > 0:
         if news['score'] >= 4:
@@ -1504,17 +1562,17 @@ def evaluer_v50(data, ticker, nom_actif, macro_data):
             details.append(("NEWS", "ACHAT", f"Positif ({round(news['score'], 1)}/10) -> +{POIDS['NEWS_NLP']} pts"))
         elif news['score'] <= -4:
             score_vente += POIDS["NEWS_NLP"]
-            details.append(("NEWS", "VENTE", f"Négatif ({round(news['score'], 1)}/10) -> +{POIDS['NEWS_NLP']} pts"))
+            details.append(("NEWS", "VENTE", f"NÃ©gatif ({round(news['score'], 1)}/10) -> +{POIDS['NEWS_NLP']} pts"))
         elif news['score'] >= 2:
             score_achat += POIDS["NEWS_NLP"] * 0.4
-            details.append(("NEWS", "ACHAT", f"Léger + ({round(news['score'], 1)}) -> +{round(POIDS['NEWS_NLP'] * 0.4, 1)} pts"))
+            details.append(("NEWS", "ACHAT", f"LÃ©ger + ({round(news['score'], 1)}) -> +{round(POIDS['NEWS_NLP'] * 0.4, 1)} pts"))
         elif news['score'] <= -2:
             score_vente += POIDS["NEWS_NLP"] * 0.4
-            details.append(("NEWS", "VENTE", f"Léger - ({round(news['score'], 1)}) -> +{round(POIDS['NEWS_NLP'] * 0.4, 1)} pts"))
+            details.append(("NEWS", "VENTE", f"LÃ©ger - ({round(news['score'], 1)}) -> +{round(POIDS['NEWS_NLP'] * 0.4, 1)} pts"))
         else:
             details.append(("NEWS", "NEUTRE", f"Score {round(news['score'], 1)}"))
 
-    # ON-CHAIN
+    # â•â•â• ON-CHAIN â•â•â•
     onchain = get_onchain_score(ticker)
     if onchain and onchain['score'] != 0:
         if onchain['score'] >= 3:
@@ -1525,14 +1583,14 @@ def evaluer_v50(data, ticker, nom_actif, macro_data):
             details.append(("ON-CHAIN", "VENTE", f"Score {onchain['score']}/10 -> +{POIDS['ONCHAIN']} pts"))
         elif onchain['score'] >= 1:
             score_achat += POIDS["ONCHAIN"] * 0.4
-            details.append(("ON-CHAIN", "ACHAT", f"Léger + -> +{round(POIDS['ONCHAIN'] * 0.4, 1)} pts"))
+            details.append(("ON-CHAIN", "ACHAT", f"LÃ©ger + -> +{round(POIDS['ONCHAIN'] * 0.4, 1)} pts"))
         elif onchain['score'] <= -1:
             score_vente += POIDS["ONCHAIN"] * 0.4
-            details.append(("ON-CHAIN", "VENTE", f"Léger - -> +{round(POIDS['ONCHAIN'] * 0.4, 1)} pts"))
+            details.append(("ON-CHAIN", "VENTE", f"LÃ©ger - -> +{round(POIDS['ONCHAIN'] * 0.4, 1)} pts"))
     else:
         details.append(("ON-CHAIN", "NEUTRE", "N/A"))
 
-    # ICHIMOKU
+    # â•â•â• ICHIMOKU (NOUVEAU v5.0) â•â•â•
     if 'Ichi_Tenkan' in data.columns:
         try:
             tenkan = get_val(derniere['Ichi_Tenkan'])
@@ -1541,6 +1599,7 @@ def evaluer_v50(data, ticker, nom_actif, macro_data):
             span_b = get_val(derniere['Ichi_SpanB']) if not np.isnan(get_val(derniere['Ichi_SpanB'])) else 0
 
             if not np.isnan(tenkan) and not np.isnan(kijun):
+                # Prix au-dessus du nuage + Tenkan > Kijun = bullish
                 nuage_haut = max(span_a, span_b) if span_a and span_b else 0
                 nuage_bas = min(span_a, span_b) if span_a and span_b else 0
 
@@ -1563,7 +1622,7 @@ def evaluer_v50(data, ticker, nom_actif, macro_data):
     else:
         details.append(("ICHIMOKU", "NEUTRE", "Non disponible"))
 
-    # SUPPORTS/RÉSISTANCES
+    # â•â•â• SUPPORTS/RÃ‰SISTANCES (NOUVEAU v5.0) â•â•â•
     supports, resistances = detecter_supports_resistances(data)
     if supports and resistances:
         support_proche = max([s for s in supports if s < prix], default=None)
@@ -1574,14 +1633,14 @@ def evaluer_v50(data, ticker, nom_actif, macro_data):
             details.append(("S/R", "ACHAT", f"Proche support {round(support_proche, 2)} -> +{POIDS['SUPPORTS_RES']} pts"))
         elif resistance_proche and (resistance_proche - prix) / prix < 0.02:
             score_vente += POIDS["SUPPORTS_RES"]
-            details.append(("S/R", "VENTE", f"Proche résistance {round(resistance_proche, 2)} -> +{POIDS['SUPPORTS_RES']} pts"))
+            details.append(("S/R", "VENTE", f"Proche rÃ©sistance {round(resistance_proche, 2)} -> +{POIDS['SUPPORTS_RES']} pts"))
         else:
             details.append(("S/R", "NEUTRE", f"S: {round(support_proche, 2) if support_proche else 'N/A'} | R: {round(resistance_proche, 2) if resistance_proche else 'N/A'}"))
     else:
         supports, resistances = [], []
-        details.append(("S/R", "NEUTRE", "Non détectés"))
+        details.append(("S/R", "NEUTRE", "Non dÃ©tectÃ©s"))
 
-    # VWAP
+    # â•â•â• VWAP (NOUVEAU v5.0) â•â•â•
     if 'VWAP' in data.columns:
         vwap = get_val(derniere['VWAP'])
         if not np.isnan(vwap):
@@ -1594,7 +1653,7 @@ def evaluer_v50(data, ticker, nom_actif, macro_data):
             else:
                 details.append(("VWAP", "NEUTRE", "Proche du VWAP"))
 
-    # ORDER FLOW
+    # â•â•â• ORDER FLOW / CARNET D'ORDRES (NOUVEAU v5.0) â•â•â•
     if ticker in CCXT_SYMBOLS:
         ob_data = get_order_book_imbalance(CCXT_SYMBOLS[ticker])
         if ob_data:
@@ -1606,30 +1665,30 @@ def evaluer_v50(data, ticker, nom_actif, macro_data):
                 score_vente += POIDS["ORDER_FLOW"]
                 details.append(("ORDER FLOW", "VENTE", f"Pression vente {round(imbalance*100, 0)}% -> +{POIDS['ORDER_FLOW']} pts"))
             else:
-                details.append(("ORDER FLOW", "NEUTRE", f"Équilibré ({round(imbalance*100, 0)}%)"))
+                details.append(("ORDER FLOW", "NEUTRE", f"Ã‰quilibrÃ© ({round(imbalance*100, 0)}%)"))
         else:
             details.append(("ORDER FLOW", "NEUTRE", "Non disponible"))
     else:
         details.append(("ORDER FLOW", "NEUTRE", "N/A (pas crypto)"))
 
-    # ML PREDICTION
+    # â•â•â• ML PREDICTION (NOUVEAU v5.0) â•â•â•
     ml_result = entrainer_modele_ml(ticker, data)
     if ml_result and ml_result['accuracy'] > 0.52:
         if ml_result['direction'] == "ACHAT" and ml_result['confiance'] > 0.55:
             score_achat += POIDS["ML_PREDICTION"]
-            details.append(("🤖 ML", "ACHAT", f"Proba hausse {round(ml_result['proba_hausse']*100, 0)}% (acc: {round(ml_result['accuracy']*100, 0)}%) -> +{POIDS['ML_PREDICTION']} pts"))
+            details.append(("ðŸ¤– ML", "ACHAT", f"Proba hausse {round(ml_result['proba_hausse']*100, 0)}% (acc: {round(ml_result['accuracy']*100, 0)}%) -> +{POIDS['ML_PREDICTION']} pts"))
         elif ml_result['direction'] == "VENTE" and ml_result['confiance'] > 0.55:
             score_vente += POIDS["ML_PREDICTION"]
-            details.append(("🤖 ML", "VENTE", f"Proba baisse {round(ml_result['proba_baisse']*100, 0)}% (acc: {round(ml_result['accuracy']*100, 0)}%) -> +{POIDS['ML_PREDICTION']} pts"))
+            details.append(("ðŸ¤– ML", "VENTE", f"Proba baisse {round(ml_result['proba_baisse']*100, 0)}% (acc: {round(ml_result['accuracy']*100, 0)}%) -> +{POIDS['ML_PREDICTION']} pts"))
         else:
-            details.append(("🤖 ML", "NEUTRE", f"Confiance insuffisante ({round(ml_result['confiance']*100, 0)}%)"))
+            details.append(("ðŸ¤– ML", "NEUTRE", f"Confiance insuffisante ({round(ml_result['confiance']*100, 0)}%)"))
     else:
-        details.append(("🤖 ML", "NEUTRE", "Pas assez de données ou accuracy faible"))
+        details.append(("ðŸ¤– ML", "NEUTRE", "Pas assez de donnÃ©es ou accuracy faible"))
 
-    # ADX INFO
-    details.append(("ADX", "OK", f"ADX = {round(adx_val, 1)} -> Tendance confirmée"))
+    # â•â•â• ADX INFO â•â•â•
+    details.append(("ADX", "OK", f"ADX = {round(adx_val, 1)} -> Tendance confirmÃ©e"))
 
-    # MTF
+    # â•â•â• MTF â•â•â•
     mtf = analyser_mtf(ticker)
     if mtf:
         if mtf.get('4h'):
@@ -1638,7 +1697,7 @@ def evaluer_v50(data, ticker, nom_actif, macro_data):
             details.append(("MTF WEEKLY", mtf['weekly']['tendance'], f"RSI W: {round(mtf['weekly']['rsi'], 0)}"))
         details.append(("MTF CONSENSUS", mtf['consensus'], "Alignement multi-TF"))
 
-    # SL/TP
+    # â•â•â• SL/TP â•â•â•
     sl_tp = None
     if score_achat > score_vente:
         sl_tp = calculer_sl_tp(prix, atr_val, "ACHAT", supports, resistances)
@@ -1648,9 +1707,9 @@ def evaluer_v50(data, ticker, nom_actif, macro_data):
     return score_achat, score_vente, details, prix, adx_val, False, sl_tp, mtf, ml_result
 
 
-# ══════════════════════════════════════════════════════════
-# GRAPHIQUE
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# GRAPHIQUE (amÃ©liorÃ© v5.0 â€” Ichimoku + S/R)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 def creer_graphique(data, nom, supports=None, resistances=None):
     df = data.tail(60)
@@ -1658,6 +1717,7 @@ def creer_graphique(data, nom, supports=None, resistances=None):
                         row_heights=[0.4, 0.2, 0.2, 0.2],
                         subplot_titles=["Prix + Indicateurs", "RSI", "MACD", "Volume"])
 
+    # Prix
     fig.add_trace(go.Scatter(x=df.index, y=df['Close'], name='Prix',
                              line=dict(color='#667eea', width=2.5)), row=1, col=1)
     fig.add_trace(go.Scatter(x=df.index, y=df['MA_200'], name='MA 200',
@@ -1668,6 +1728,7 @@ def creer_graphique(data, nom, supports=None, resistances=None):
                              line=dict(color='rgba(100,255,100,0.5)', width=1),
                              fill='tonexty', fillcolor='rgba(100,100,255,0.05)'), row=1, col=1)
 
+    # Ichimoku Cloud
     if 'Ichi_SpanA' in df.columns:
         fig.add_trace(go.Scatter(x=df.index, y=df['Ichi_SpanA'], name='Span A',
                                  line=dict(color='rgba(0,255,100,0.3)', width=1)), row=1, col=1)
@@ -1675,6 +1736,7 @@ def creer_graphique(data, nom, supports=None, resistances=None):
                                  line=dict(color='rgba(255,100,0,0.3)', width=1),
                                  fill='tonexty', fillcolor='rgba(100,200,100,0.1)'), row=1, col=1)
 
+    # Supports/RÃ©sistances
     if supports:
         for s in supports[:3]:
             fig.add_hline(y=s, line_dash="dot", line_color="rgba(0,210,255,0.6)",
@@ -1684,11 +1746,13 @@ def creer_graphique(data, nom, supports=None, resistances=None):
             fig.add_hline(y=r, line_dash="dot", line_color="rgba(245,87,108,0.6)",
                          annotation_text=f"R: {round(r, 2)}", row=1, col=1)
 
+    # RSI
     fig.add_trace(go.Scatter(x=df.index, y=df['RSI'], name='RSI',
                              line=dict(color='#a855f7', width=2)), row=2, col=1)
     fig.add_hline(y=70, line_dash="dash", line_color="rgba(245,87,108,0.5)", row=2, col=1)
     fig.add_hline(y=30, line_dash="dash", line_color="rgba(0,210,255,0.5)", row=2, col=1)
 
+    # MACD
     fig.add_trace(go.Scatter(x=df.index, y=df['MACD'], name='MACD',
                              line=dict(color='#667eea', width=2)), row=3, col=1)
     fig.add_trace(go.Scatter(x=df.index, y=df['MACD_Signal'], name='Signal',
@@ -1697,6 +1761,7 @@ def creer_graphique(data, nom, supports=None, resistances=None):
     colors_hist = ['rgba(0,210,255,0.6)' if float(h) >= 0 else 'rgba(245,87,108,0.6)' for h in hist]
     fig.add_trace(go.Bar(x=df.index, y=hist, name='Hist', marker_color=colors_hist), row=3, col=1)
 
+    # Volume
     vol_colors = ['rgba(0,210,255,0.6)' if float(df['Close'].iloc[i]) >= float(df['Open'].iloc[i])
                   else 'rgba(245,87,108,0.6)' for i in range(len(df))]
     fig.add_trace(go.Bar(x=df.index, y=df['Volume'], name='Volume',
@@ -1715,11 +1780,12 @@ def creer_graphique(data, nom, supports=None, resistances=None):
     return fig
 
 
-# ══════════════════════════════════════════════════════════
-# SCAN PRINCIPAL v5.0 (parallélisé)
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# SCAN PRINCIPAL v5.0 (parallÃ©lisÃ©)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 def analyser_actif(nom, ticker, seuil_score, macro_data):
+    """Analyse un seul actif â€” pour parallÃ©lisation"""
     try:
         data = telecharger_donnees(ticker)
         if data.empty:
@@ -1766,7 +1832,9 @@ def analyser_actif(nom, ticker, seuil_score, macro_data):
 
 
 def lancer_scan(actifs_choisis, seuil_score, macro_data):
+    """Scan parallÃ©lisÃ© â€” 3x plus rapide"""
     resultats = []
+
     with ThreadPoolExecutor(max_workers=4) as executor:
         futures = {
             executor.submit(analyser_actif, nom, ACTIFS[nom], seuil_score, macro_data): nom
@@ -1777,6 +1845,7 @@ def lancer_scan(actifs_choisis, seuil_score, macro_data):
             if result:
                 resultats.append(result)
 
+    # Trier : signaux d'abord, puis par score
     resultats.sort(key=lambda x: (
         0 if x['action'] in ["ACHAT", "VENTE"] else 1,
         -max(x['score_achat'], x['score_vente'])
@@ -1784,9 +1853,9 @@ def lancer_scan(actifs_choisis, seuil_score, macro_data):
     return resultats
 
 
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # EMAIL
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 def envoyer_email(sujet, message, email_addr, email_pass):
     try:
@@ -1803,11 +1872,11 @@ def envoyer_email(sujet, message, email_addr, email_pass):
         return str(e)
 
 
-# ══════════════════════════════════════════════════════════
-# BACKTESTING v5.0
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# BACKTESTING v5.0 (vectorisÃ© â€” plus rapide)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-@st.cache_data(ttl=3600, show_spinner="📊 Backtesting...")
+@st.cache_data(ttl=3600, show_spinner="ðŸ“Š Backtesting...")
 def backtester_strategie(ticker, seuil_score):
     try:
         data = yf.download(ticker, period="1y", interval="1d", progress=False)
@@ -1840,11 +1909,13 @@ def backtester_strategie(ticker, seuil_score):
             score_a = 0
             score_v = 0
 
+            # RSI
             rsi_now = float(derniere['RSI']) if not np.isnan(float(derniere['RSI'])) else 50
             rsi_avant = float(avant['RSI']) if not np.isnan(float(avant['RSI'])) else 50
             if rsi_now < 30 and rsi_avant < 30: score_a += POIDS["RSI"]
             elif rsi_now > 70 and rsi_avant > 70: score_v += POIDS["RSI"]
 
+            # MACD
             macd_now = float(derniere['MACD']) if not np.isnan(float(derniere['MACD'])) else 0
             signal_now = float(derniere['MACD_Signal']) if not np.isnan(float(derniere['MACD_Signal'])) else 0
             macd_av = float(avant['MACD']) if not np.isnan(float(avant['MACD'])) else 0
@@ -1852,25 +1923,30 @@ def backtester_strategie(ticker, seuil_score):
             if macd_now > signal_now and macd_av > signal_av: score_a += POIDS["MACD"]
             elif macd_now < signal_now and macd_av < signal_av: score_v += POIDS["MACD"]
 
+            # Stoch
             stoch_now = float(derniere['Stoch_K']) if not np.isnan(float(derniere['Stoch_K'])) else 50
             stoch_avant = float(avant['Stoch_K']) if not np.isnan(float(avant['Stoch_K'])) else 50
             if stoch_now < 20 and stoch_avant < 20: score_a += POIDS["STOCH"]
             elif stoch_now > 80 and stoch_avant > 80: score_v += POIDS["STOCH"]
 
+            # Fibo
             fib_618 = float(derniere['Fib_618']) if not np.isnan(float(derniere['Fib_618'])) else prix
             fib_382 = float(derniere['Fib_382']) if not np.isnan(float(derniere['Fib_382'])) else prix
             if prix <= fib_618: score_a += POIDS["FIBO"]
             elif prix >= fib_382: score_v += POIDS["FIBO"]
 
+            # MA200
             ma200 = float(derniere['MA_200']) if not np.isnan(float(derniere['MA_200'])) else prix
             if prix <= ma200 * 1.02: score_a += POIDS["MA200"]
             elif prix >= ma200 * 1.10: score_v += POIDS["MA200"]
 
+            # Bollinger
             bb_lower = float(derniere['BB_Lower']) if not np.isnan(float(derniere['BB_Lower'])) else prix
             bb_upper = float(derniere['BB_Upper']) if not np.isnan(float(derniere['BB_Upper'])) else prix
             if prix <= bb_lower: score_a += POIDS["BOLLINGER"]
             elif prix >= bb_upper: score_v += POIDS["BOLLINGER"]
 
+            # Ichimoku
             if 'Ichi_Tenkan' in data.columns:
                 tenkan = float(derniere['Ichi_Tenkan']) if not np.isnan(float(derniere.get('Ichi_Tenkan', np.nan))) else prix
                 kijun = float(derniere['Ichi_Kijun']) if not np.isnan(float(derniere.get('Ichi_Kijun', np.nan))) else prix
@@ -1882,6 +1958,7 @@ def backtester_strategie(ticker, seuil_score):
                     if prix > nuage_haut and tenkan > kijun: score_a += POIDS["ICHIMOKU"]
                     elif prix < nuage_bas and tenkan < kijun: score_v += POIDS["ICHIMOKU"]
 
+            # Position management
             if position is None:
                 if score_a >= seuil_score and score_a > score_v:
                     position = "LONG"
@@ -1914,6 +1991,7 @@ def backtester_strategie(ticker, seuil_score):
                     trades.append({'type': 'SHORT', 'pnl': ((prix_entree - prix) / prix_entree) * 100, 'bars': i})
                     position = None
 
+        # ClÃ´turer position ouverte
         if position and len(data) > 0:
             prix_final = float(data.iloc[-1]['Close'])
             if position == "LONG":
@@ -1939,6 +2017,7 @@ def backtester_strategie(ticker, seuil_score):
         cumul = df_trades['pnl'].cumsum()
         max_drawdown = (cumul - cumul.cummax()).min()
 
+        # Sharpe ratio approximation
         if df_trades['pnl'].std() > 0:
             sharpe = (pnl_moyen / df_trades['pnl'].std()) * np.sqrt(nb_trades)
         else:
@@ -1962,55 +2041,28 @@ def backtester_strategie(ticker, seuil_score):
         return None
 
 
-# ══════════════════════════════════════════════════════════
-# PRIX ACTUEL (pour simulation)
-# ══════════════════════════════════════════════════════════
-
-def get_prix_actuel(ticker):
-    """Récupère le prix actuel d'un actif"""
-    try:
-        if HAS_CCXT and ticker in CCXT_SYMBOLS:
-            exchange = ccxt.binance({'enableRateLimit': True})
-            t = exchange.fetch_ticker(CCXT_SYMBOLS[ticker])
-            return t['last']
-        data = yf.download(ticker, period="1d", interval="1m", progress=False)
-        if isinstance(data.columns, pd.MultiIndex):
-            data.columns = data.columns.get_level_values(0)
-        if not data.empty:
-            return float(data['Close'].iloc[-1])
-    except:
-        pass
-    try:
-        data = yf.download(ticker, period="5d", interval="1d", progress=False)
-        if isinstance(data.columns, pd.MultiIndex):
-            data.columns = data.columns.get_level_values(0)
-        if not data.empty:
-            return float(data['Close'].iloc[-1])
-    except:
-        return None
-
-
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # INTERFACE PRINCIPALE v5.0
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-st.title("🧠 Trading Scanner v5.0")
-st.caption("ML + Ichimoku + Order Flow + Macro + NLP + Simulation | Score max: " + str(sum(POIDS.values())) + " pts")
+st.title("ðŸ§  Trading Scanner v5.0")
+st.caption("ML + Ichimoku + Order Flow + Macro + NLP | Score max: " + str(sum(POIDS.values())) + " pts")
 
+# Badges des modules actifs
 modules = []
-if HAS_PANDAS_TA: modules.append("✅ pandas-ta")
-else: modules.append("⚠️ pandas-ta")
-if HAS_CCXT: modules.append("✅ ccxt")
-else: modules.append("⚠️ ccxt")
-if HAS_LGBM: modules.append("✅ LightGBM")
-else: modules.append("⚠️ GradientBoosting")
+if HAS_PANDAS_TA: modules.append("âœ… pandas-ta")
+else: modules.append("âš ï¸ pandas-ta")
+if HAS_CCXT: modules.append("âœ… ccxt")
+else: modules.append("âš ï¸ ccxt")
+if HAS_LGBM: modules.append("âœ… LightGBM")
+else: modules.append("âš ï¸ GradientBoosting")
 st.caption(" | ".join(modules))
 
 config = charger_config()
 
 # --- SIDEBAR ---
 with st.sidebar:
-    st.header("⚙️ Configuration")
+    st.header("âš™ï¸ Configuration")
 
     seuil_defaut = config.get("seuil_score", 8.0)
     seuil_score = st.slider("Seuil d'alerte", 4.0, 20.0, seuil_defaut, 0.5)
@@ -2021,7 +2073,7 @@ with st.sidebar:
 
     st.divider()
 
-    st.header("💰 Capital & Risque")
+    st.header("ðŸ’° Capital & Risque")
     capital_defaut = config.get("capital", 1000)
     capital = st.number_input("Capital (CHF)", min_value=0, value=capital_defaut, step=100)
     if capital != capital_defaut:
@@ -2031,12 +2083,12 @@ with st.sidebar:
 
     st.divider()
 
-    st.header("📊 Actifs")
-    actifs_defaut = config.get("actifs", ["🥇 Or (Gold)", "₿ Bitcoin", "💵 EUR/USD"])
+    st.header("ðŸ“Š Actifs")
+    actifs_defaut = config.get("actifs", ["ðŸ¥‡ Or (Gold)", "â‚¿ Bitcoin", "ðŸ’µ EUR/USD"])
     actifs_defaut = [a for a in actifs_defaut if a in ACTIFS]
     if not actifs_defaut:
-        actifs_defaut = ["🥇 Or (Gold)", "₿ Bitcoin", "💵 EUR/USD"]
-    actifs_choisis = st.multiselect("Sélection", list(ACTIFS.keys()), default=actifs_defaut)
+        actifs_defaut = ["ðŸ¥‡ Or (Gold)", "â‚¿ Bitcoin", "ðŸ’µ EUR/USD"]
+    actifs_choisis = st.multiselect("SÃ©lection", list(ACTIFS.keys()), default=actifs_defaut)
     if actifs_choisis != actifs_defaut:
         config["actifs"] = actifs_choisis
         sauver_config(config)
@@ -2044,7 +2096,7 @@ with st.sidebar:
     st.divider()
 
     # ALERTES
-    st.header("🔔 Alertes")
+    st.header("ðŸ”” Alertes")
     alert_mode = st.radio("Mode", ["Aucune", "Email Bluewin", "Telegram"])
     email_addr = ""
     email_pass = ""
@@ -2060,7 +2112,7 @@ with st.sidebar:
     st.divider()
 
     # MACRO
-    st.header("🌍 Macro Live")
+    st.header("ðŸŒ Macro Live")
     macro_data, macro_details = fetch_macro_data()
     for detail in macro_details[:6]:
         st.caption(detail)
@@ -2073,67 +2125,68 @@ with st.sidebar:
 
     st.divider()
 
-    # AIDE RAPIDE
-    with st.expander("📖 AIDE", expanded=False):
+    # AIDE
+    with st.expander("ðŸ“– AIDE", expanded=False):
         st.markdown("""
-**Nouveautés v5.0 :**
-- 🤖 **ML** : Prédit le mouvement à 5j
-- ☁️ **Ichimoku** : Nuage japonais
-- 📊 **Order Flow** : Carnet d'ordres (crypto)
-- 🎯 **S/R dynamiques** : Supports/Résistances auto
-- 📈 **VWAP** : Volume Weighted Average Price
-- ⚡ **ccxt** : Données temps réel crypto
-- 📱 **Telegram** : Alertes instantanées
-- 🎮 **Simulation** : Investissement virtuel
-- 📖 **Aide** : Glossaire + Sources
+**NouveautÃ©s v5.0 :**
+- ðŸ¤– **ML (Machine Learning)** : PrÃ©dit le mouvement Ã  5j via LightGBM
+- â˜ï¸ **Ichimoku** : Nuage japonais (tendance + supports)
+- ðŸ“Š **Order Flow** : Analyse le carnet d'ordres (crypto)
+- ðŸŽ¯ **S/R dynamiques** : Supports/RÃ©sistances auto
+- ðŸ“ˆ **VWAP** : Volume Weighted Average Price
+- âš¡ **ccxt** : DonnÃ©es temps rÃ©el crypto
+- ðŸ“± **Telegram** : Alertes instantanÃ©es
+- ðŸ”„ **MTF Weekly** : Confirmation hebdomadaire
+- ðŸ§µ **Scan parallÃ¨le** : 3x plus rapide
         """)
 
 # --- BOUTONS ---
 col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
 with col1:
-    btn_scan = st.button("🚀 Scanner", type="primary", use_container_width=True)
+    btn_scan = st.button("ðŸš€ Scanner", type="primary", use_container_width=True)
 with col2:
-    btn_backtest = st.button("📊 Backtest", use_container_width=True)
+    btn_backtest = st.button("ðŸ“Š Backtest", use_container_width=True)
 with col3:
-    btn_alert_test = st.button("🔔 Test Alerte", use_container_width=True)
+    btn_alert_test = st.button("ðŸ”” Test Alerte", use_container_width=True)
 with col4:
-    btn_refresh = st.button("🔄 Refresh", use_container_width=True)
+    btn_refresh = st.button("ðŸ”„ Refresh", use_container_width=True)
 
 if btn_refresh:
     st.cache_data.clear()
-    st.success("✅ Cache vidé !")
+    st.success("âœ… Cache vidÃ© !")
 
 # --- SCAN ---
 if btn_scan:
     if not actifs_choisis:
         st.warning("Choisis au moins un actif.")
     else:
-        with st.spinner("🧠 Analyse v5.0 en cours (parallélisée)..."):
+        with st.spinner("ðŸ§  Analyse v5.0 en cours (parallÃ©lisÃ©e)..."):
             resultats = lancer_scan(actifs_choisis, seuil_score, macro_data)
 
         if not resultats:
-            st.error("Pas de données.")
+            st.error("Pas de donnÃ©es.")
         else:
-            st.subheader("📋 Résultats")
+            # RÃ©sumÃ© en haut
+            st.subheader("ðŸ“‹ RÃ©sultats")
             cols = st.columns(min(len(resultats), 4))
             for i, r in enumerate(resultats):
                 with cols[i % len(cols)]:
                     if r['action'] == "ACHAT":
                         st.metric(r['nom'], f"{round(r['prix'], 2)}",
-                                  f"🟢 LONG ({round(r['score_achat'], 1)}/{round(r['score_max'], 0)})")
+                                  f"ðŸŸ¢ LONG ({round(r['score_achat'], 1)}/{round(r['score_max'], 0)})")
                     elif r['action'] == "VENTE":
                         st.metric(r['nom'], f"{round(r['prix'], 2)}",
-                                  f"🔴 SHORT ({round(r['score_vente'], 1)}/{round(r['score_max'], 0)})",
+                                  f"ðŸ”´ SHORT ({round(r['score_vente'], 1)}/{round(r['score_max'], 0)})",
                                   delta_color="inverse")
                     elif r['action'] == "PLAT":
                         st.metric(r['nom'], f"{round(r['prix'], 2)}",
-                                  f"😴 Plat (ADX {round(r['adx'], 0)})", delta_color="off")
+                                  f"ðŸ˜´ Plat (ADX {round(r['adx'], 0)})", delta_color="off")
                     else:
                         sc = max(r['score_achat'], r['score_vente'])
                         st.metric(r['nom'], f"{round(r['prix'], 2)}",
-                                  f"⏸️ ({round(sc, 1)}/{round(r['score_max'], 0)})", delta_color="off")
+                                  f"â¸ï¸ ({round(sc, 1)}/{round(r['score_max'], 0)})", delta_color="off")
 
-            # Alertes
+            # Envoyer alertes
             alertes = [r for r in resultats if r['action'] in ["ACHAT", "VENTE"]]
             if alertes:
                 for a in alertes:
@@ -2143,97 +2196,97 @@ if btn_scan:
                     elif alert_mode == "Email Bluewin" and email_addr and email_pass:
                         direction = "LONG" if a['action'] == "ACHAT" else "SHORT"
                         envoyer_email(
-                            f"🚨 Signal {direction} — {a['nom']}",
+                            f"ðŸš¨ Signal {direction} â€” {a['nom']}",
                             f"Prix: {round(a['prix'], 2)}\nScore: {round(max(a['score_achat'], a['score_vente']), 1)}",
                             email_addr, email_pass
                         )
 
             st.divider()
 
-            # Détails par actif
+            # DÃ©tails par actif
             for idx, r in enumerate(resultats):
-                icone = "🟢" if r['action'] == "ACHAT" else "🔴" if r['action'] == "VENTE" else "😴" if r['action'] == "PLAT" else "🟡"
+                icone = "ðŸŸ¢" if r['action'] == "ACHAT" else "ðŸ”´" if r['action'] == "VENTE" else "ðŸ˜´" if r['action'] == "PLAT" else "ðŸŸ¡"
                 label = "LONG" if r['action'] == "ACHAT" else "SHORT" if r['action'] == "VENTE" else r['action']
 
-                with st.expander(f"{icone} {r['nom']} — {label}", expanded=(r['action'] in ["ACHAT", "VENTE"])):
+                with st.expander(f"{icone} {r['nom']} â€” {label}", expanded=(r['action'] in ["ACHAT", "VENTE"])):
 
                     if r['action'] == "ACHAT":
-                        st.success(f"🟢 SIGNAL LONG — Score {round(r['score_achat'], 1)}/{round(r['score_max'], 0)} (seuil: {seuil_score})")
+                        st.success(f"ðŸŸ¢ SIGNAL LONG â€” Score {round(r['score_achat'], 1)}/{round(r['score_max'], 0)} (seuil: {seuil_score})")
                     elif r['action'] == "VENTE":
-                        st.error(f"🔴 SIGNAL SHORT — Score {round(r['score_vente'], 1)}/{round(r['score_max'], 0)} (seuil: {seuil_score})")
+                        st.error(f"ðŸ”´ SIGNAL SHORT â€” Score {round(r['score_vente'], 1)}/{round(r['score_max'], 0)} (seuil: {seuil_score})")
                     elif r['action'] == "PLAT":
-                        st.warning(f"😴 PLAT — ADX = {round(r['adx'], 1)}")
+                        st.warning(f"ðŸ˜´ PLAT â€” ADX = {round(r['adx'], 1)}")
                     else:
-                        st.info(f"⏸️ Attendre — Score {round(max(r['score_achat'], r['score_vente']), 1)}/{round(r['score_max'], 0)}")
+                        st.info(f"â¸ï¸ Attendre â€” Score {round(max(r['score_achat'], r['score_vente']), 1)}/{round(r['score_max'], 0)}")
 
-                    # ML
+                    # ML Prediction
                     if r.get('ml_prediction'):
                         ml = r['ml_prediction']
                         col_ml1, col_ml2, col_ml3 = st.columns(3)
                         with col_ml1:
-                            st.metric("🤖 Proba Hausse", f"{round(ml['proba_hausse']*100, 0)}%")
+                            st.metric("ðŸ¤– Proba Hausse", f"{round(ml['proba_hausse']*100, 0)}%")
                         with col_ml2:
-                            st.metric("📊 Accuracy", f"{round(ml['accuracy']*100, 0)}%")
+                            st.metric("ðŸ“Š Accuracy", f"{round(ml['accuracy']*100, 0)}%")
                         with col_ml3:
-                            st.metric("🎯 Direction ML", ml['direction'])
+                            st.metric("ðŸŽ¯ Direction ML", ml['direction'])
                         if ml.get('top_features'):
                             st.caption("Top features: " + ", ".join([f"{f[0]}" for f in ml['top_features'][:3]]))
 
                     # SL/TP
                     if r['sl_tp'] and r['action'] in ["ACHAT", "VENTE"]:
-                        st.markdown("#### 🎯 Stop-Loss & Take-Profit")
+                        st.markdown("#### ðŸŽ¯ Stop-Loss & Take-Profit")
                         col_sl, col_tp, col_rr = st.columns(3)
                         with col_sl:
-                            st.metric("🛑 Stop-Loss", f"{round(r['sl_tp']['stop_loss'], 2)}",
+                            st.metric("ðŸ›‘ Stop-Loss", f"{round(r['sl_tp']['stop_loss'], 2)}",
                                       f"-{round(r['sl_tp']['risque_pct'], 2)}%", delta_color="inverse")
                         with col_tp:
-                            st.metric("🎯 Take-Profit", f"{round(r['sl_tp']['take_profit'], 2)}",
+                            st.metric("ðŸŽ¯ Take-Profit", f"{round(r['sl_tp']['take_profit'], 2)}",
                                       f"+{round(r['sl_tp']['reward_pct'], 2)}%")
                         with col_rr:
-                            st.metric("📐 R:R", f"1:{round(r['sl_tp']['ratio_rr'], 1)}",
+                            st.metric("ðŸ“ R:R", f"1:{round(r['sl_tp']['ratio_rr'], 1)}",
                                       f"ATR: {round(r['sl_tp']['atr'], 2)}")
                         if capital > 0:
                             nb, taille = calculer_taille_position(capital, risque_pct, r['prix'], r['sl_tp']['stop_loss'])
-                            st.caption(f"💰 {round(capital, 0)} CHF ({risque_pct}% risque) -> {round(nb, 4)} unités ({round(taille, 2)} CHF)")
+                            st.caption(f"ðŸ’° {round(capital, 0)} CHF ({risque_pct}% risque) -> {round(nb, 4)} unitÃ©s ({round(taille, 2)} CHF)")
 
                     # Timing
                     t = r.get('timing')
                     if t and r['action'] in ["ACHAT", "VENTE"]:
                         if t['heure_a_eviter']:
-                            st.warning(f"🕐 ⛔ MAUVAISE HEURE ({t['heure']}h)")
+                            st.warning(f"ðŸ• â›” MAUVAISE HEURE ({t['heure']}h)")
                         elif (r['action'] == "ACHAT" and t['heure_bonne_achat']) or (r['action'] == "VENTE" and t['heure_bonne_vente']):
-                            st.success(f"🕐 ✅ Bonne heure ({t['heure']}h)")
+                            st.success(f"ðŸ• âœ… Bonne heure ({t['heure']}h)")
                         else:
                             ideal = t['achat_ideal'] if r['action'] == "ACHAT" else t['vente_ideal']
-                            st.info(f"🕐 Heure neutre ({t['heure']}h) | Idéal: {ideal}")
+                            st.info(f"ðŸ• Heure neutre ({t['heure']}h) | IdÃ©al: {ideal}")
 
                     # MTF
                     mtf = r.get('mtf')
                     if mtf:
                         if mtf.get('consensus') == r['action']:
-                            st.success(f"📊 Multi-TF CONFIRME {label}")
+                            st.success(f"ðŸ“Š Multi-TF CONFIRME {label}")
                         elif mtf.get('consensus') != "NEUTRE" and mtf.get('consensus') != r['action']:
-                            st.warning(f"⚠️ Multi-TF = {mtf['consensus']} -> CONFLIT !")
+                            st.warning(f"âš ï¸ Multi-TF = {mtf['consensus']} -> CONFLIT !")
 
                     # Graphique
                     fig = creer_graphique(r['data'], r['nom'], r.get('supports'), r.get('resistances'))
                     st.plotly_chart(fig, use_container_width=True, key=f"chart_{idx}")
 
-                    # Détails
-                    st.markdown("**Détail indicateurs:**")
+                    # DÃ©tails indicateurs
+                    st.markdown("**DÃ©tail indicateurs:**")
                     for ind, signal, explication in r['details']:
                         if signal == "ACHAT":
-                            st.write(f"✅ **{ind}** — {explication}")
+                            st.write(f"âœ… **{ind}** â€” {explication}")
                         elif signal == "VENTE":
-                            st.write(f"❌ **{ind}** — {explication}")
+                            st.write(f"âŒ **{ind}** â€” {explication}")
                         elif signal == "OK":
-                            st.write(f"💪 **{ind}** — {explication}")
+                            st.write(f"ðŸ’ª **{ind}** â€” {explication}")
                         elif signal == "PLAT":
-                            st.write(f"😴 **{ind}** — {explication}")
+                            st.write(f"ðŸ˜´ **{ind}** â€” {explication}")
                         else:
-                            st.write(f"⏸️ **{ind}** — {explication}")
+                            st.write(f"â¸ï¸ **{ind}** â€” {explication}")
 
-            # Historique signaux
+            # Historique des signaux
             for a in alertes:
                 st.session_state.historique_signaux.append({
                     'time': datetime.now(pytz.timezone('Europe/Zurich')).strftime("%H:%M"),
@@ -2249,8 +2302,8 @@ if btn_backtest:
         st.warning("Choisis au moins un actif.")
     else:
         st.divider()
-        st.header("📊 Backtesting 1 an")
-        st.caption(f"Seuil = {seuil_score} | SL = 1.5×ATR | TP = 2.5×ATR | Ichimoku inclus")
+        st.header("ðŸ“Š Backtesting 1 an")
+        st.caption(f"Seuil = {seuil_score} | SL = 1.5Ã—ATR | TP = 2.5Ã—ATR | Ichimoku inclus")
 
         for nom in actifs_choisis:
             ticker = ACTIFS[nom]
@@ -2258,29 +2311,30 @@ if btn_backtest:
                 bt = backtester_strategie(ticker, seuil_score)
 
             if bt:
-                with st.expander(f"📊 {nom}", expanded=True):
+                with st.expander(f"ðŸ“Š {nom}", expanded=True):
                     col_a, col_b, col_c, col_d, col_e = st.columns(5)
                     with col_a:
-                        st.metric("💰 P&L Total", f"{round(bt['pnl_total'], 2)}%",
+                        st.metric("ðŸ’° P&L Total", f"{round(bt['pnl_total'], 2)}%",
                                   f"{bt['nb_trades']} trades")
                     with col_b:
-                        st.metric("🎯 Win Rate", f"{round(bt['win_rate'], 1)}%",
+                        st.metric("ðŸŽ¯ Win Rate", f"{round(bt['win_rate'], 1)}%",
                                   f"{bt['nb_gagnants']}W / {bt['nb_perdants']}L")
                     with col_c:
-                        st.metric("📈 Profit Factor", f"{round(bt['profit_factor'], 2)}")
+                        st.metric("ðŸ“ˆ Profit Factor", f"{round(bt['profit_factor'], 2)}")
                     with col_d:
-                        st.metric("📉 Max Drawdown", f"{round(bt['max_drawdown'], 2)}%",
+                        st.metric("ðŸ“‰ Max Drawdown", f"{round(bt['max_drawdown'], 2)}%",
                                   delta_color="inverse")
                     with col_e:
-                        st.metric("📐 Sharpe", f"{round(bt['sharpe'], 2)}")
+                        st.metric("ðŸ“ Sharpe", f"{round(bt['sharpe'], 2)}")
 
                     if bt['win_rate'] >= 60 and bt['profit_factor'] >= 1.5:
-                        st.success("✅ Stratégie PROFITABLE !")
+                        st.success("âœ… StratÃ©gie PROFITABLE !")
                     elif bt['win_rate'] >= 50:
-                        st.info("🟡 Correcte — peut être améliorée")
+                        st.info("ðŸŸ¡ Correcte â€” peut Ãªtre amÃ©liorÃ©e")
                     else:
-                        st.error("❌ Non rentable — ajuste le seuil")
+                        st.error("âŒ Non rentable â€” ajuste le seuil")
 
+                    # Equity curve
                     cumul = bt['trades']['pnl'].cumsum()
                     fig_eq = go.Figure()
                     fig_eq.add_trace(go.Scatter(y=cumul.values, mode='lines',
@@ -2289,34 +2343,35 @@ if btn_backtest:
                                         paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
                     st.plotly_chart(fig_eq, use_container_width=True, key=f"eq_{nom}")
             else:
-                st.info(f"{nom} : pas assez de données")
+                st.info(f"{nom} : pas assez de donnÃ©es")
 
 
 # --- TEST ALERTE ---
 if btn_alert_test:
     if alert_mode == "Telegram" and tg_token and tg_chat_id:
-        success = envoyer_telegram("🧪 <b>Test Scanner v5.0</b>\n\nÇa marche ! 🚀", tg_token, tg_chat_id)
+        success = envoyer_telegram("ðŸ§ª <b>Test Scanner v5.0</b>\n\nÃ‡a marche ! ðŸš€", tg_token, tg_chat_id)
         if success:
-            st.success("✅ Telegram envoyé !")
+            st.success("âœ… Telegram envoyÃ© !")
         else:
-            st.error("❌ Erreur Telegram — vérifie le token et chat ID")
+            st.error("âŒ Erreur Telegram â€” vÃ©rifie le token et chat ID")
     elif alert_mode == "Email Bluewin" and email_addr and email_pass:
-        result = envoyer_email("Test Scanner v5.0", "Ça marche !", email_addr, email_pass)
+        result = envoyer_email("Test Scanner v5.0", "Ã‡a marche !", email_addr, email_pass)
         if result is True:
-            st.success("✅ Email envoyé !")
+            st.success("âœ… Email envoyÃ© !")
         else:
-            st.error(f"❌ {result}")
+            st.error(f"âŒ {result}")
     else:
-        st.warning("Configure une méthode d'alerte d'abord.")
+        st.warning("Configure une mÃ©thode d'alerte d'abord.")
 
 
-# ══════════════════════════════════════════════════════════
-# NEWS / ON-CHAIN / DIVERGENCE
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# SECTIONS BASSES (News, On-Chain, etc.)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 st.divider()
 
-st.header("📰 Sentiment News (NLP)")
+# --- NLP NEWS ---
+st.header("ðŸ“° Sentiment News (NLP)")
 col_n1, col_n2, col_n3 = st.columns(3)
 with col_n1:
     st.subheader("Bitcoin")
@@ -2325,7 +2380,7 @@ with col_n1:
     st.caption(news_btc['details'])
     if news_btc.get('headlines'):
         for h in news_btc['headlines'][:2]:
-            emoji = "🟢" if h['score'] > 0.1 else "🔴" if h['score'] < -0.1 else "⚪"
+            emoji = "ðŸŸ¢" if h['score'] > 0.1 else "ðŸ”´" if h['score'] < -0.1 else "âšª"
             st.caption(f"{emoji} {h['title'][:60]}...")
 with col_n2:
     st.subheader("Or")
@@ -2340,7 +2395,8 @@ with col_n3:
 
 st.divider()
 
-st.header("⛓️ On-Chain Bitcoin")
+# --- ON-CHAIN ---
+st.header("â›“ï¸ On-Chain Bitcoin")
 onchain = get_onchain_score("BTC-USD")
 st.metric("Score On-Chain", f"{onchain['score']}/10")
 for d in onchain['details']:
@@ -2348,7 +2404,8 @@ for d in onchain['details']:
 
 st.divider()
 
-st.header("🔗 Divergence Or/Bitcoin (7j)")
+# --- DIVERGENCE OR/BTC ---
+st.header("ðŸ”— Divergence Or/Bitcoin (7j)")
 div_data = get_divergence_or_btc()
 if div_data:
     col_d1, col_d2, col_d3 = st.columns(3)
@@ -2357,157 +2414,188 @@ if div_data:
     with col_d2:
         st.metric("BTC (7j)", f"{round(div_data['var_btc'], 1)}%")
     with col_d3:
-        st.metric("Écart", f"{round(div_data['ecart'], 1)}%")
+        st.metric("Ã‰cart", f"{round(div_data['ecart'], 1)}%")
 
-# Historique signaux
+# --- HISTORIQUE SIGNAUX ---
 if st.session_state.historique_signaux:
     st.divider()
-    st.header("📜 Historique des signaux (session)")
+    st.header("ðŸ“œ Historique des signaux (session)")
     for s in reversed(st.session_state.historique_signaux[-10:]):
-        emoji = "🟢" if s['action'] == "ACHAT" else "🔴"
-        st.caption(f"{s['time']} | {emoji} {s['nom']} — Score {s['score']}")
+        emoji = "ðŸŸ¢" if s['action'] == "ACHAT" else "ðŸ”´"
+        st.caption(f"{s['time']} | {emoji} {s['nom']} â€” Score {s['score']}")
 
 
-# ══════════════════════════════════════════════════════════
-# 🎮 MODULE SIMULATION D'INVESTISSEMENT
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# SCAN AUTOMATIQUE
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+with st.sidebar:
+    st.divider()
+    st.header("â° Scan Auto")
+    auto_scan = st.toggle("Activer scan auto", value=False)
+    intervalle = st.selectbox("FrÃ©quence", [
+        "30 secondes", "1 minute", "5 minutes", "15 minutes", "30 minutes"
+    ], index=2)
+    intervalles_sec = {"30 secondes": 30, "1 minute": 60, "5 minutes": 300, "15 minutes": 900, "30 minutes": 1800}
+    sec = intervalles_sec[intervalle]
+    if auto_scan:
+        st.success(f"ðŸ”„ Scan toutes les {intervalle}")
+
+if auto_scan and actifs_choisis:
+    st.subheader(f"ðŸ”„ Scan automatique â€” toutes les {intervalle}")
+    placeholder = st.empty()
+    compteur = st.empty()
+
+    while True:
+        now = datetime.now(pytz.timezone("Europe/Zurich")).strftime("%d.%m.%Y %H:%M:%S")
+        with placeholder.container():
+            st.caption(f"â° Dernier scan : {now}")
+            resultats = lancer_scan(actifs_choisis, seuil_score, macro_data)
+            if resultats:
+                cols = st.columns(min(len(resultats), 4))
+                for i, r in enumerate(resultats):
+                    with cols[i % len(cols)]:
+                        if r['action'] == "ACHAT":
+                            st.metric(r['nom'], f"{round(r['prix'], 2)}", f"ðŸŸ¢ LONG ({round(r['score_achat'], 1)})")
+                        elif r['action'] == "VENTE":
+                            st.metric(r['nom'], f"{round(r['prix'], 2)}", f"ðŸ”´ SHORT ({round(r['score_vente'], 1)})", delta_color="inverse")
+                        else:
+                            sc = max(r['score_achat'], r['score_vente'])
+                            st.metric(r['nom'], f"{round(r['prix'], 2)}", f"â¸ï¸ ({round(sc, 1)})", delta_color="off")
+
+                alertes = [r for r in resultats if r['action'] in ["ACHAT", "VENTE"]]
+                if alertes:
+                    st.warning(f"ðŸš¨ {len(alertes)} SIGNAL(S) !")
+                    for a in alertes:
+                        if alert_mode == "Telegram" and tg_token and tg_chat_id:
+                            envoyer_telegram(formater_alerte_telegram(a), tg_token, tg_chat_id)
+
+        for remaining in range(sec, 0, -1):
+            mins, secs = divmod(remaining, 60)
+            compteur.caption(f"â³ Prochain scan dans {str(mins).zfill(2)}:{str(secs).zfill(2)}")
+            time.sleep(1)
+        st.rerun()
+
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ðŸŽ® MODULE SIMULATION D'INVESTISSEMENT
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+SIMULATION_FILE = "simulation_data.json"
+ALERTES_PRIX_FILE = "alertes_prix.json"
+
+def charger_simulations():
+    if os.path.exists(SIMULATION_FILE):
+        try:
+            with open(SIMULATION_FILE, "r") as f:
+                return json.load(f)
+        except:
+            return []
+    return []
+
+def sauver_simulations(sims):
+    with open(SIMULATION_FILE, "w") as f:
+        json.dump(sims, f, indent=2)
+
+def charger_alertes_prix():
+    if os.path.exists(ALERTES_PRIX_FILE):
+        try:
+            with open(ALERTES_PRIX_FILE, "r") as f:
+                return json.load(f)
+        except:
+            return []
+    return []
+
+def sauver_alertes_prix(alertes):
+    with open(ALERTES_PRIX_FILE, "w") as f:
+        json.dump(alertes, f, indent=2)
+
+def get_prix_actuel(ticker):
+    """RÃ©cupÃ¨re le prix actuel d'un actif"""
+    try:
+        if HAS_CCXT and ticker in CCXT_SYMBOLS:
+            exchange = ccxt.binance({'enableRateLimit': True})
+            t = exchange.fetch_ticker(CCXT_SYMBOLS[ticker])
+            return t['last']
+        data = yf.download(ticker, period="5d", interval="1d", progress=False)
+        if isinstance(data.columns, pd.MultiIndex):
+            data.columns = data.columns.get_level_values(0)
+        if not data.empty:
+            return float(data['Close'].iloc[-1])
+    except:
+        return None
 
 st.divider()
-st.header("🎮 Simulation d'investissement")
-st.caption("Investis virtuellement et suis tes gains/pertes en temps réel sur les actifs du scanner")
+st.header("ðŸŽ® Simulation d'investissement")
+st.caption("Investis virtuellement et suis tes gains/pertes en temps rÃ©el")
 
 simulations = charger_simulations()
 
-# --- CRÉER UNE NOUVELLE SIMULATION ---
-with st.expander("➕ Nouvelle simulation", expanded=not simulations):
+with st.expander("âž• Nouvelle simulation", expanded=not simulations):
     col_sim1, col_sim2, col_sim3 = st.columns(3)
-
     with col_sim1:
-        sim_actif = st.selectbox(
-            "Actif à simuler",
-            list(ACTIFS.keys()),
-            key="sim_actif_select"
-        )
-
+        sim_actif = st.selectbox("Actif Ã  simuler", list(ACTIFS.keys()), key="sim_actif_select")
     with col_sim2:
-        sim_montant = st.number_input(
-            "Montant (CHF)",
-            min_value=10,
-            max_value=1000000,
-            value=1000,
-            step=100,
-            key="sim_montant_input"
-        )
-
+        sim_montant = st.number_input("Montant (CHF)", min_value=10, max_value=1000000, value=1000, step=100, key="sim_montant_input")
     with col_sim3:
-        sim_direction = st.radio(
-            "Direction",
-            ["📈 LONG (hausse)", "📉 SHORT (baisse)"],
-            key="sim_direction_radio"
-        )
+        sim_direction = st.radio("Direction", ["ðŸ“ˆ LONG (hausse)", "ðŸ“‰ SHORT (baisse)"], key="sim_direction_radio")
 
-    if st.button("🚀 Investir (simulation)", type="primary", key="btn_sim_invest"):
+    if st.button("ðŸš€ Investir (simulation)", type="primary", key="btn_sim_invest"):
         ticker = ACTIFS[sim_actif]
         prix_entree = get_prix_actuel(ticker)
-
         if prix_entree:
             tz_suisse = pytz.timezone("Europe/Zurich")
             now = datetime.now(tz_suisse)
-
             direction = "LONG" if "LONG" in sim_direction else "SHORT"
             nb_unites = sim_montant / prix_entree
-
             nouvelle_sim = {
                 "id": hashlib.md5(f"{sim_actif}{now.isoformat()}".encode()).hexdigest()[:8],
-                "actif": sim_actif,
-                "ticker": ticker,
-                "direction": direction,
-                "montant_initial": sim_montant,
-                "prix_entree": prix_entree,
-                "nb_unites": nb_unites,
-                "date_entree": now.strftime("%d.%m.%Y %H:%M:%S"),
-                "timestamp": now.isoformat(),
-                "statut": "OUVERT",
+                "actif": sim_actif, "ticker": ticker, "direction": direction,
+                "montant_initial": sim_montant, "prix_entree": prix_entree,
+                "nb_unites": nb_unites, "date_entree": now.strftime("%d.%m.%Y %H:%M:%S"),
+                "timestamp": now.isoformat(), "statut": "OUVERT",
             }
-
             simulations.append(nouvelle_sim)
             sauver_simulations(simulations)
-            st.success(f"""
-            ✅ **Simulation créée !**
-            - {sim_actif} — {direction}
-            - Montant : {sim_montant} CHF
-            - Prix d'entrée : {round(prix_entree, 4)}
-            - Unités : {round(nb_unites, 6)}
-            - Date : {now.strftime("%d.%m.%Y %H:%M:%S")}
-            """)
+            st.success(f"âœ… {sim_actif} {direction} @ {round(prix_entree, 4)} | {sim_montant} CHF")
             st.rerun()
         else:
-            st.error("❌ Impossible de récupérer le prix actuel.")
+            st.error("âŒ Impossible de rÃ©cupÃ©rer le prix.")
 
-# --- AFFICHAGE DES SIMULATIONS ACTIVES ---
 sims_ouvertes = [s for s in simulations if s['statut'] == "OUVERT"]
-
 if sims_ouvertes:
-    st.subheader(f"📊 Portefeuille simulé ({len(sims_ouvertes)} position{'s' if len(sims_ouvertes) > 1 else ''})")
-
+    st.subheader(f"ðŸ“Š Portefeuille ({len(sims_ouvertes)} position{'s' if len(sims_ouvertes) > 1 else ''})")
     total_investi = 0
-    total_valeur = 0
     total_pnl = 0
+    pnl_bars = []
 
-    for i, sim in enumerate(sims_ouvertes):
+    for sim in sims_ouvertes:
         prix_actuel = get_prix_actuel(sim['ticker'])
-        if prix_actuel is None:
+        if not prix_actuel:
             continue
-
-        # Calcul P&L
         if sim['direction'] == "LONG":
-            valeur_actuelle = sim['nb_unites'] * prix_actuel
-            pnl_chf = valeur_actuelle - sim['montant_initial']
             pnl_pct = ((prix_actuel - sim['prix_entree']) / sim['prix_entree']) * 100
-        else:  # SHORT
-            pnl_prix = sim['prix_entree'] - prix_actuel
-            pnl_pct = (pnl_prix / sim['prix_entree']) * 100
-            pnl_chf = sim['montant_initial'] * (pnl_pct / 100)
-            valeur_actuelle = sim['montant_initial'] + pnl_chf
-
+        else:
+            pnl_pct = ((sim['prix_entree'] - prix_actuel) / sim['prix_entree']) * 100
+        pnl_chf = sim['montant_initial'] * (pnl_pct / 100)
+        valeur = sim['montant_initial'] + pnl_chf
         total_investi += sim['montant_initial']
-        total_valeur += valeur_actuelle
         total_pnl += pnl_chf
+        pnl_bars.append({'actif': sim['actif'], 'pnl_pct': pnl_pct, 'pnl_chf': pnl_chf})
 
-        # Affichage
-        emoji_dir = "📈" if sim['direction'] == "LONG" else "📉"
-        emoji_pnl = "🟢" if pnl_chf >= 0 else "🔴"
-
-        col_s1, col_s2, col_s3, col_s4, col_s5 = st.columns([2, 1.5, 1.5, 1.5, 1])
-
+        col_s1, col_s2, col_s3, col_s4, col_s5 = st.columns([2, 1.5, 1.5, 1.5, 0.8])
         with col_s1:
+            emoji_dir = "ðŸ“ˆ" if sim['direction'] == "LONG" else "ðŸ“‰"
             st.markdown(f"**{emoji_dir} {sim['actif']}** ({sim['direction']})")
-            st.caption(f"Entrée: {sim['date_entree']}")
-
+            st.caption(f"EntrÃ©e: {sim['date_entree']}")
         with col_s2:
-            st.metric(
-                "Prix",
-                f"{round(prix_actuel, 4)}",
-                f"Entrée: {round(sim['prix_entree'], 4)}"
-            )
-
+            st.metric("Prix", f"{round(prix_actuel, 4)}", f"E: {round(sim['prix_entree'], 4)}")
         with col_s3:
-            st.metric(
-                "P&L (CHF)",
-                f"{round(pnl_chf, 2)} CHF",
-                f"{'+' if pnl_pct >= 0 else ''}{round(pnl_pct, 2)}%",
-                delta_color="normal" if pnl_chf >= 0 else "inverse"
-            )
-
+            st.metric("P&L", f"{round(pnl_chf, 2)} CHF", f"{'+' if pnl_pct >= 0 else ''}{round(pnl_pct, 2)}%",
+                      delta_color="normal" if pnl_chf >= 0 else "inverse")
         with col_s4:
-            st.metric(
-                "Valeur",
-                f"{round(valeur_actuelle, 2)} CHF",
-                f"Investi: {sim['montant_initial']} CHF"
-            )
-
+            st.metric("Valeur", f"{round(valeur, 2)} CHF", f"Investi: {sim['montant_initial']}")
         with col_s5:
-            if st.button("❌ Clôturer", key=f"close_sim_{sim['id']}"):
+            if st.button("âŒ", key=f"close_{sim['id']}"):
                 sim['statut'] = "FERME"
                 sim['prix_sortie'] = prix_actuel
                 sim['date_sortie'] = datetime.now(pytz.timezone("Europe/Zurich")).strftime("%d.%m.%Y %H:%M:%S")
@@ -2516,403 +2604,285 @@ if sims_ouvertes:
                 sauver_simulations(simulations)
                 st.rerun()
 
-    # RÉSUMÉ GLOBAL
+    # RÃ©sumÃ© + Graphique performance
     st.divider()
-    col_tot1, col_tot2, col_tot3, col_tot4 = st.columns(4)
-    with col_tot1:
-        st.metric("💰 Total investi", f"{round(total_investi, 2)} CHF")
-    with col_tot2:
-        st.metric("📊 Valeur actuelle", f"{round(total_valeur, 2)} CHF")
-    with col_tot3:
-        pnl_total_pct = ((total_valeur - total_investi) / total_investi * 100) if total_investi > 0 else 0
-        st.metric("📈 P&L Total", f"{round(total_pnl, 2)} CHF",
-                  f"{'+' if pnl_total_pct >= 0 else ''}{round(pnl_total_pct, 2)}%")
-    with col_tot4:
-        jours = 0
-        if sims_ouvertes:
-            premiere = min(sims_ouvertes, key=lambda x: x['timestamp'])
-            delta = datetime.now(pytz.timezone("Europe/Zurich")) - datetime.fromisoformat(premiere['timestamp'])
-            jours = delta.days
-        st.metric("📅 Durée", f"{jours} jour{'s' if jours > 1 else ''}")
+    col_t1, col_t2, col_t3 = st.columns(3)
+    pnl_total_pct = (total_pnl / total_investi * 100) if total_investi > 0 else 0
+    col_t1.metric("ðŸ’° Total investi", f"{round(total_investi, 0)} CHF")
+    col_t2.metric("ðŸ“ˆ P&L Total", f"{round(total_pnl, 2)} CHF", f"{'+' if pnl_total_pct >= 0 else ''}{round(pnl_total_pct, 2)}%")
+    col_t3.metric("ðŸ“Š Positions", f"{len(sims_ouvertes)}")
 
-# --- HISTORIQUE DES SIMULATIONS FERMÉES ---
+    # Graphique barres P&L
+    if pnl_bars:
+        fig_sim = go.Figure()
+        noms = [p['actif'] for p in pnl_bars]
+        pnls = [p['pnl_pct'] for p in pnl_bars]
+        colors = ['#00d2ff' if p >= 0 else '#f5576c' for p in pnls]
+        fig_sim.add_trace(go.Bar(x=noms, y=pnls, marker_color=colors,
+                                 text=[f"{p:+.1f}%" for p in pnls], textposition='outside'))
+        fig_sim.update_layout(title="Performance par position", height=300, template="plotly_dark",
+                              paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', showlegend=False)
+        st.plotly_chart(fig_sim, use_container_width=True)
+
+# Historique fermÃ©es
 sims_fermees = [s for s in simulations if s['statut'] == "FERME"]
 if sims_fermees:
-    with st.expander(f"📜 Historique ({len(sims_fermees)} clôturée{'s' if len(sims_fermees) > 1 else ''})"):
+    with st.expander(f"ðŸ“œ Historique ({len(sims_fermees)} clÃ´turÃ©e{'s' if len(sims_fermees) > 1 else ''})"):
         for sim in reversed(sims_fermees[-20:]):
-            emoji = "🟢" if sim.get('pnl_chf', 0) >= 0 else "🔴"
-            st.caption(
-                f"{emoji} {sim['actif']} ({sim['direction']}) | "
-                f"Entrée: {round(sim['prix_entree'], 4)} → Sortie: {round(sim.get('prix_sortie', 0), 4)} | "
-                f"P&L: {round(sim.get('pnl_chf', 0), 2)} CHF ({'+' if sim.get('pnl_pct', 0) >= 0 else ''}{round(sim.get('pnl_pct', 0), 2)}%) | "
-                f"{sim['date_entree']} → {sim.get('date_sortie', '?')}"
-            )
-
+            emoji = "ðŸŸ¢" if sim.get('pnl_chf', 0) >= 0 else "ðŸ”´"
+            st.caption(f"{emoji} {sim['actif']} ({sim['direction']}) | P&L: {round(sim.get('pnl_chf', 0), 2)} CHF ({round(sim.get('pnl_pct', 0), 2)}%) | {sim.get('date_sortie', '?')}")
         if len(sims_fermees) >= 2:
-            pnls = [s.get('pnl_pct', 0) for s in sims_fermees]
-            gagnants = sum(1 for p in pnls if p > 0)
-            st.divider()
-            st.caption(f"📊 Win Rate: {round(gagnants/len(pnls)*100, 0)}% | "
-                      f"Moy: {round(np.mean(pnls), 2)}% | "
-                      f"Best: +{round(max(pnls), 2)}% | "
-                      f"Worst: {round(min(pnls), 2)}%")
+            pnls_hist = [s.get('pnl_pct', 0) for s in sims_fermees]
+            gagnants = sum(1 for p in pnls_hist if p > 0)
+            # Equity curve
+            pnls_cum = np.cumsum([s.get('pnl_chf', 0) for s in sims_fermees])
+            fig_eq = go.Figure()
+            fig_eq.add_trace(go.Scatter(y=pnls_cum, mode='lines+markers', line=dict(color='#667eea', width=2)))
+            fig_eq.update_layout(title="ðŸ’° Equity Curve (simulations)", height=250, template="plotly_dark",
+                                 paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+            st.plotly_chart(fig_eq, use_container_width=True)
+            st.caption(f"Win Rate: {round(gagnants/len(pnls_hist)*100, 0)}% | Moy: {round(np.mean(pnls_hist), 2)}% | Best: +{round(max(pnls_hist), 2)}% | Worst: {round(min(pnls_hist), 2)}%")
 
-# BOUTON RESET
 if simulations:
-    if st.button("🗑️ Tout effacer", key="reset_sims"):
+    if st.button("ðŸ—‘ï¸ Effacer toutes les simulations", key="reset_sims"):
         sauver_simulations([])
         st.rerun()
 
 
-# ══════════════════════════════════════════════════════════
-# 📖 MODULE AIDE & GLOSSAIRE
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ðŸš¨ ALERTES PAR PRIX CIBLE
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 st.divider()
-st.header("📖 Aide & Apprentissage")
-
-tab_glossaire, tab_indicateurs, tab_sources = st.tabs([
-    "🔤 Glossaire (termes anglais)",
-    "📊 Indicateurs expliqués",
-    "🎓 Sources pour apprendre"
-])
-
-with tab_glossaire:
-    st.markdown("""
-    ### 🔤 Termes anglais → Français
-
-    | Terme anglais | Français | Explication simple |
-    |---|---|---|
-    | **Bull / Bullish** | Haussier | Le marché monte 📈 |
-    | **Bear / Bearish** | Baissier | Le marché descend 📉 |
-    | **Long** | Achat | Tu paries que ça monte |
-    | **Short** | Vente à découvert | Tu paries que ça baisse |
-    | **Stop-Loss (SL)** | Arrêt de perte | Limite ta perte automatiquement |
-    | **Take-Profit (TP)** | Prise de bénéfice | Encaisse ton gain automatiquement |
-    | **Risk:Reward (R:R)** | Ratio risque/récompense | Ex: 1:2 = tu risques 1 pour gagner 2 |
-    | **Spread** | Écart | Différence entre prix achat et vente |
-    | **Leverage** | Effet de levier | Multiplie gains ET pertes |
-    | **Drawdown** | Perte max | Plus grosse chute depuis un sommet |
-    | **Win Rate** | Taux de réussite | % de trades gagnants |
-    | **Profit Factor** | Facteur de profit | Gains totaux ÷ Pertes totales |
-    | **Breakout** | Cassure | Le prix sort d'une zone |
-    | **Support** | Support | Niveau plancher où le prix rebondit |
-    | **Resistance** | Résistance | Niveau plafond que le prix peine à casser |
-    | **Trend** | Tendance | Direction générale du marché |
-    | **Reversal** | Retournement | La tendance change de direction |
-    | **Volatility** | Volatilité | Amplitude des mouvements |
-    | **Volume** | Volume | Quantité échangée |
-    | **Order Book** | Carnet d'ordres | Liste des acheteurs et vendeurs |
-    | **Fear & Greed** | Peur & Cupidité | Indice d'émotion du marché (0-100) |
-    | **Funding Rate** | Taux de financement | Coût pour garder une position ouverte |
-    | **Open Interest** | Intérêt ouvert | Nombre de contrats futures ouverts |
-    | **Liquidity** | Liquidité | Facilité à acheter/vendre sans impact |
-    | **Slippage** | Glissement | Différence entre prix voulu et exécuté |
-    | **ATH** | Plus haut historique | All-Time High |
-    | **ATL** | Plus bas historique | All-Time Low |
-    | **DCA** | Achat régulier | Dollar Cost Averaging (lissage) |
-    | **HODL** | Garder longtemps | Ne pas vendre (crypto slang) |
-    | **Whale** | Baleine | Gros investisseur qui influence le marché |
-    | **FOMO** | Peur de rater | Fear Of Missing Out |
-    | **FUD** | Peur/Doute | Fear, Uncertainty, Doubt |
-    | **Backtesting** | Test historique | Tester une stratégie sur le passé |
-    | **Sharpe Ratio** | Ratio de Sharpe | Performance ajustée au risque |
-    | **Candlestick** | Bougie | Représentation graphique d'une période |
-    | **Doji** | Doji | Bougie d'indécision (ouverture ≈ clôture) |
-    | **Gap** | Écart | Trou entre le prix de clôture et d'ouverture |
-    | **Scalping** | Scalping | Trades très courts (secondes/minutes) |
-    | **Swing Trading** | Swing | Trades sur quelques jours/semaines |
-    | **Position Trading** | Position | Trades sur semaines/mois |
-    | **Margin Call** | Appel de marge | Ton broker te demande plus d'argent |
-    | **Liquidation** | Liquidation | Position fermée de force (levier) |
-    """)
-
-with tab_indicateurs:
-    st.markdown("""
-    ### 📊 Indicateurs du Scanner — Expliqués simplement
-
-    ---
-
-    #### 📈 RSI (Relative Strength Index)
-    - **Quoi ?** Mesure la force d'un mouvement (0-100)
-    - **Signal achat** : RSI < 30 = survendu (trop baissé → rebond probable)
-    - **Signal vente** : RSI > 70 = suracheté (trop monté → correction probable)
-    - **Période** : 14 jours par défaut
-
-    ---
-
-    #### 📊 MACD (Moving Average Convergence Divergence)
-    - **Quoi ?** Montre la direction et la force de la tendance
-    - **Signal achat** : MACD croise au-dessus du Signal
-    - **Signal vente** : MACD croise en dessous du Signal
-    - **Histogramme** : Barres = écart entre MACD et Signal
-
-    ---
-
-    #### 🎯 Stochastique (Stochastic Oscillator)
-    - **Quoi ?** Compare le prix de clôture aux extrêmes récents
-    - **Signal achat** : %K < 20 (survendu)
-    - **Signal vente** : %K > 80 (suracheté)
-
-    ---
-
-    #### 📐 Fibonacci (Retracement)
-    - **Quoi ?** Niveaux de correction basés sur des ratios mathématiques
-    - **Niveaux clés** : 23.6%, 38.2%, 61.8%, 78.6%
-    - Le prix "rebondit" souvent sur ces niveaux
-
-    ---
-
-    #### 📏 MA200 (Moving Average 200 jours)
-    - **Quoi ?** Moyenne des 200 derniers jours
-    - Prix **au-dessus** = tendance haussière long terme
-    - Prix **en dessous** = tendance baissière long terme
-
-    ---
-
-    #### ☁️ Ichimoku (Nuage)
-    - **Quoi ?** Indicateur japonais tout-en-un (tendance + supports + momentum)
-    - **Tenkan-sen** (ligne de conversion) : Moyenne mobile rapide (9 périodes)
-    - **Kijun-sen** (ligne de base) : Moyenne mobile lente (26 périodes)
-    - **Nuage (Cloud/Kumo)** : Zone entre Senkou Span A et B
-    - Prix au-dessus du nuage = **bullish** / en dessous = **bearish** / dans = **indécis**
-    - **TK Cross** : Tenkan croise Kijun (comme un croisement de MA)
-
-    ---
-
-    #### 📊 Bandes de Bollinger
-    - **Quoi ?** Enveloppe autour du prix (±2 écarts-types)
-    - Prix touche la **bande basse** → survente possible
-    - Prix touche la **bande haute** → surachat possible
-    - Bandes **serrées** (squeeze) → explosion de volatilité à venir
-
-    ---
-
-    #### 💪 ADX (Average Directional Index)
-    - **Quoi ?** Mesure la FORCE de la tendance (pas la direction !)
-    - ADX < 25 = marché plat → **pas de signal** (on attend)
-    - ADX > 25 = tendance confirmée → signaux fiables
-    - ADX > 40 = tendance très forte
-
-    ---
-
-    #### 📈 VWAP (Volume Weighted Average Price)
-    - **Quoi ?** Prix moyen pondéré par le volume de la journée
-    - Prix **sous** VWAP → "bon marché" pour les institutionnels
-    - Prix **au-dessus** VWAP → "cher" pour les institutionnels
-    - Utilisé comme support/résistance dynamique
-
-    ---
-
-    #### 📊 ATR (Average True Range)
-    - **Quoi ?** Mesure la volatilité moyenne (en prix)
-    - Sert à calculer les Stop-Loss et Take-Profit
-    - ATR élevé = marché volatile → SL/TP plus larges
-    - ATR bas = marché calme → SL/TP plus serrés
-
-    ---
-
-    #### 🤖 ML (Machine Learning)
-    - **Quoi ?** Modèle d'IA (LightGBM) qui apprend des patterns passés
-    - Prédit la probabilité de hausse >1% à 5 jours
-    - Utilise 19 features (RSI, momentum, volatilité, etc.)
-    - **Accuracy** = % de prédictions correctes sur données de test
-    - Ne prédit que si accuracy > 52% et confiance > 55%
-
-    ---
-
-    #### 📊 Order Flow (Carnet d'ordres)
-    - **Quoi ?** Analyse la pression achat vs vente en temps réel
-    - **Imbalance > 30%** côté achat → le prix devrait monter
-    - **Imbalance > 30%** côté vente → le prix devrait baisser
-    - **Bid Wall** = gros mur d'achat (support invisible)
-    - **Ask Wall** = gros mur de vente (résistance invisible)
-    - Disponible uniquement pour les cryptos (via Binance)
-
-    ---
-
-    #### 🔀 Divergences
-    - **Divergence haussière** : Prix fait un plus bas MAIS RSI/MACD fait un plus haut → retournement haussier probable
-    - **Divergence baissière** : Prix fait un plus haut MAIS RSI/MACD fait un plus bas → retournement baissier probable
-    - Signal très puissant quand confirmé
-
-    ---
-
-    #### 🌍 Score Macro
-    - Combine : Dollar (DXY), VIX, Taux 10Y, Pétrole, S&P 500, Fear & Greed, Funding Rate, ETF BTC
-    - Pondéré selon la catégorie d'actif :
-      - Crypto → Fear & Greed + Funding pèsent plus
-      - Forex → Dollar + Taux pèsent plus
-      - Actions → VIX + S&P 500 pèsent plus
-
-    ---
-
-    #### ⛓️ On-Chain (Bitcoin)
-    - **Fees** : Frais du réseau Bitcoin (congestion = bearish)
-    - **Mempool** : File d'attente des transactions non confirmées
-    - **Hashrate** : Puissance de calcul du réseau (↑ = confiance des mineurs)
-    - **L/S Ratio** : Long/Short ratio — trop de longs = correction probable
-    - **DeFi TVL** : Total Value Locked — santé de l'écosystème crypto
-
-    ---
-
-    #### 🔗 Divergence Or/Bitcoin
-    - Compare la performance 7 jours de l'Or et du Bitcoin
-    - Si l'un surperforme largement l'autre → l'autre pourrait rattraper
-    - Signal contrarian (à contre-courant)
-
-    ---
-
-    #### 📊 Multi-Timeframe (MTF)
-    - Analyse sur 3 timeframes : **4H + Daily + Weekly**
-    - Consensus = les 3 sont alignés → signal très fort
-    - Conflit = contradiction entre timeframes → prudence
-    """)
-
-with tab_sources:
-    st.markdown("""
-    ### 🎓 Ressources pour apprendre le trading
-
-    ---
-
-    #### 🇫🇷 En français
-
-    | Ressource | Type | Niveau | Lien |
-    |---|---|---|---|
-    | **Zonebourse** | Articles + formations | Débutant → Avancé | [zonebourse.com](https://www.zonebourse.com) |
-    | **ABC Bourse** | Formation gratuite | Débutant | [abcbourse.com](https://www.abcbourse.com) |
-    | **Investir.ch** | News financières Suisse | Intermédiaire | [investir.ch](https://www.investir.ch) |
-    | **Café de la Bourse** | Articles didactiques | Débutant | [cafedelabourse.com](https://www.cafedelabourse.com) |
-    | **YouTube: Formation Trading FR** | Vidéos | Débutant | Rechercher "formation trading débutant" |
-
-    ---
-
-    #### 🇬🇧 En anglais (les meilleures)
-
-    | Ressource | Type | Niveau | Lien |
-    |---|---|---|---|
-    | **Investopedia** | Encyclopédie complète | Tous niveaux | [investopedia.com](https://www.investopedia.com) |
-    | **BabyPips** | Cours Forex/Trading | Débutant | [babypips.com](https://www.babypips.com) |
-    | **TradingView** | Analyses communautaires | Intermédiaire | [tradingview.com](https://www.tradingview.com) |
-    | **Coinglass** | Données futures/liquidations | Avancé | [coinglass.com](https://www.coinglass.com) |
-    | **The Block** | Recherche crypto | Avancé | [theblock.co](https://www.theblock.co) |
-
-    ---
-
-    #### 📚 Livres recommandés
-
-    | Titre | Auteur | Sujet | Niveau |
-    |---|---|---|---|
-    | *L'analyse technique des marchés financiers* | John Murphy | AT complète | Intermédiaire |
-    | *Trading in the Zone* | Mark Douglas | Psychologie du trading | Tous |
-    | *The Intelligent Investor* | Benjamin Graham | Investissement value | Débutant |
-    | *Cryptoassets* | Chris Burniske | Valorisation crypto | Intermédiaire |
-    | *Market Wizards* | Jack Schwager | Interviews de traders | Tous |
-    | *Technical Analysis Explained* | Martin Pring | AT détaillée | Avancé |
-
-    ---
-
-    #### 🛠️ Outils gratuits indispensables
-
-    | Outil | Usage | Lien |
-    |---|---|---|
-    | **TradingView** | Graphiques + indicateurs | [tradingview.com](https://www.tradingview.com) |
-    | **CoinMarketCap** | Données crypto | [coinmarketcap.com](https://www.coinmarketcap.com) |
-    | **CoinGlass** | Liquidations + OI | [coinglass.com](https://www.coinglass.com) |
-    | **Finviz** | Screener actions US | [finviz.com](https://www.finviz.com) |
-    | **ForexFactory** | Calendrier économique | [forexfactory.com](https://www.forexfactory.com) |
-    | **Fear & Greed Index** | Sentiment crypto | [alternative.me](https://alternative.me/crypto/fear-and-greed-index/) |
-    | **Mempool.space** | Données Bitcoin on-chain | [mempool.space](https://mempool.space) |
-    | **DeFi Llama** | TVL DeFi | [defillama.com](https://defillama.com) |
-
-    ---
-
-    #### 🧠 Concepts clés à maîtriser (dans cet ordre)
-
-    1. **Supports & Résistances** — la base de tout
-    2. **Tendance** — savoir si le marché monte, descend ou est plat
-    3. **RSI + MACD** — les 2 indicateurs les plus utilisés
-    4. **Gestion du risque** — SL/TP + taille de position
-    5. **Psychologie** — ne JAMAIS trader sous émotion
-    6. **Analyse multi-timeframe** — confirmer sur plusieurs échelles
-    7. **Volume** — confirme la validité d'un mouvement
-    8. **Ichimoku** — indicateur avancé tout-en-un
-    9. **Machine Learning** — pour les passionnés de data
-
-    ---
-
-    #### ⚠️ Règles d'or pour débutants
-
-    1. 🎮 **Commence TOUJOURS en simulation** (c'est ce qu'on fait ici !)
-    2. 💰 Ne risque jamais plus de **1-2%** de ton capital par trade
-    3. 📉 **Apprends à perdre** — les pertes font partie du jeu
-    4. 📐 Un bon **ratio R:R** (min 1:2) est plus important qu'un bon win rate
-    5. 🧘 Ne trade **jamais sous émotion** (FOMO, vengeance, euphorie)
-    6. 📓 Tiens un **journal de trading** — note chaque trade + pourquoi
-    7. 📊 Vérifie TOUJOURS l'**ADX** — pas de tendance = pas de trade
-    8. ⏰ Respecte les **horaires optimaux** de chaque marché
-    9. 🔄 **Backteste** ta stratégie avant de risquer de l'argent réel
-    10. 📱 Ne regarde pas tes positions **toutes les 5 minutes**
-    """)
-
-
-# ══════════════════════════════════════════════════════════
-# SCAN AUTOMATIQUE
-# ══════════════════════════════════════════════════════════
-
-with st.sidebar:
-    st.divider()
-    st.header("⏰ Scan Auto")
-    auto_scan = st.toggle("Activer scan auto", value=False)
-    intervalle = st.selectbox("Fréquence", [
-        "30 secondes", "1 minute", "5 minutes", "15 minutes", "30 minutes"
-    ], index=2)
-    intervalles_sec = {"30 secondes": 30, "1 minute": 60, "5 minutes": 300, "15 minutes": 900, "30 minutes": 1800}
-    sec = intervalles_sec[intervalle]
-    if auto_scan:
-        st.success(f"🔄 Scan toutes les {intervalle}")
-
-if auto_scan and actifs_choisis:
-    st.subheader(f"🔄 Scan automatique — toutes les {intervalle}")
-    placeholder = st.empty()
-    compteur = st.empty()
-
-    while True:
-        now = datetime.now(pytz.timezone("Europe/Zurich")).strftime("%d.%m.%Y %H:%M:%S")
-        with placeholder.container():
-            st.caption(f"⏰ Dernier scan : {now}")
-            resultats = lancer_scan(actifs_choisis, seuil_score, macro_data)
-            if resultats:
-                cols = st.columns(min(len(resultats), 4))
-                for i, r in enumerate(resultats):
-                    with cols[i % len(cols)]:
-                        if r['action'] == "ACHAT":
-                            st.metric(r['nom'], f"{round(r['prix'], 2)}", f"🟢 LONG ({round(r['score_achat'], 1)})")
-                        elif r['action'] == "VENTE":
-                            st.metric(r['nom'], f"{round(r['prix'], 2)}", f"🔴 SHORT ({round(r['score_vente'], 1)})", delta_color="inverse")
-                        else:
-                            sc = max(r['score_achat'], r['score_vente'])
-                            st.metric(r['nom'], f"{round(r['prix'], 2)}", f"⏸️ ({round(sc, 1)})", delta_color="off")
-
-                alertes = [r for r in resultats if r['action'] in ["ACHAT", "VENTE"]]
-                if alertes:
-                    st.warning(f"🚨 {len(alertes)} SIGNAL(S) !")
-                    for a in alertes:
-                        if alert_mode == "Telegram" and tg_token and tg_chat_id:
-                            envoyer_telegram(formater_alerte_telegram(a), tg_token, tg_chat_id)
-
-        for remaining in range(sec, 0, -1):
-            mins, secs = divmod(remaining, 60)
-            compteur.caption(f"⏳ Prochain scan dans {str(mins).zfill(2)}:{str(secs).zfill(2)}")
-            time.sleep(1)
+st.header("ðŸš¨ Alertes par prix cible")
+st.caption("ReÃ§ois une notification quand un actif atteint ton prix")
+
+alertes_prix = charger_alertes_prix()
+
+with st.expander("âž• Nouvelle alerte prix", expanded=not alertes_prix):
+    col_al1, col_al2, col_al3 = st.columns(3)
+    with col_al1:
+        al_actif = st.selectbox("Actif", list(ACTIFS.keys()), key="al_actif")
+    with col_al2:
+        prix_actuel_al = get_prix_actuel(ACTIFS[al_actif])
+        st.caption(f"Prix actuel: {round(prix_actuel_al, 4) if prix_actuel_al else '?'}")
+        al_prix = st.number_input("Prix cible", min_value=0.0, value=float(round(prix_actuel_al, 2)) if prix_actuel_al else 0.0, step=0.01, key="al_prix")
+    with col_al3:
+        al_condition = st.radio("Quand le prix passe...", ["au-dessus â¬†ï¸", "en-dessous â¬‡ï¸"], key="al_cond")
+
+    if st.button("âž• CrÃ©er l'alerte", type="primary", key="btn_al_create"):
+        condition = "au-dessus" if "dessus" in al_condition else "en-dessous"
+        nouvelle_al = {
+            "id": hashlib.md5(f"{al_actif}{al_prix}{datetime.now().isoformat()}".encode()).hexdigest()[:8],
+            "actif": al_actif, "ticker": ACTIFS[al_actif],
+            "prix_cible": al_prix, "condition": condition,
+            "date_creation": datetime.now(pytz.timezone("Europe/Zurich")).strftime("%d.%m.%Y %H:%M"),
+            "declenchee": False,
+        }
+        alertes_prix.append(nouvelle_al)
+        sauver_alertes_prix(alertes_prix)
+        st.success(f"âœ… Alerte: {al_actif} {condition} {al_prix}")
+        st.rerun()
+
+# Alertes actives
+alertes_actives = [a for a in alertes_prix if not a.get('declenchee', False)]
+if alertes_actives:
+    st.subheader(f"ðŸ”” Alertes actives ({len(alertes_actives)})")
+    for al in alertes_actives:
+        prix_now = get_prix_actuel(al['ticker'])
+        if prix_now:
+            distance = ((al['prix_cible'] - prix_now) / prix_now) * 100
+            emoji = "â¬†ï¸" if al['condition'] == "au-dessus" else "â¬‡ï¸"
+            # VÃ©rifier si dÃ©clenchÃ©e
+            declenchee = False
+            if al['condition'] == "au-dessus" and prix_now >= al['prix_cible']:
+                declenchee = True
+            elif al['condition'] == "en-dessous" and prix_now <= al['prix_cible']:
+                declenchee = True
+            if declenchee:
+                al['declenchee'] = True
+                al['date_declenchement'] = datetime.now(pytz.timezone("Europe/Zurich")).strftime("%d.%m.%Y %H:%M")
+                sauver_alertes_prix(alertes_prix)
+                st.success(f"ðŸš¨ DÃ‰CLENCHÃ‰E ! {al['actif']} = {round(prix_now, 4)} ({al['condition']} {al['prix_cible']})")
+                if alert_mode == "Telegram" and tg_token and tg_chat_id:
+                    envoyer_telegram(f"ðŸš¨ ALERTE PRIX\n{al['actif']} = {round(prix_now, 4)}\nCible: {al['condition']} {al['prix_cible']}", tg_token, tg_chat_id)
+            else:
+                col_a1, col_a2, col_a3, col_a4 = st.columns([2, 1.5, 1.5, 0.8])
+                with col_a1:
+                    st.markdown(f"**{emoji} {al['actif']}**")
+                    st.caption(f"CrÃ©Ã©e: {al['date_creation']}")
+                with col_a2:
+                    st.metric("Cible", f"{al['prix_cible']}", al['condition'])
+                with col_a3:
+                    st.metric("Distance", f"{round(abs(distance), 2)}%", f"Actuel: {round(prix_now, 4)}")
+                with col_a4:
+                    if st.button("ðŸ—‘ï¸", key=f"del_al_{al['id']}"):
+                        alertes_prix.remove(al)
+                        sauver_alertes_prix(alertes_prix)
+                        st.rerun()
+
+# Alertes dÃ©clenchÃ©es
+alertes_passees = [a for a in alertes_prix if a.get('declenchee', False)]
+if alertes_passees:
+    with st.expander(f"âœ… Historique alertes ({len(alertes_passees)})"):
+        for al in reversed(alertes_passees[-10:]):
+            st.caption(f"âœ… {al['actif']} {al['condition']} {al['prix_cible']} â€” {al.get('date_declenchement', '?')}")
+
+if alertes_prix:
+    if st.button("ðŸ—‘ï¸ Effacer toutes les alertes", key="reset_alertes"):
+        sauver_alertes_prix([])
         st.rerun()
 
 
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ðŸ“– AIDE & APPRENTISSAGE (popup)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+st.divider()
+with st.expander("ðŸ“– Aide & Apprentissage (cliquer pour ouvrir)", expanded=False):
+    tab_glossaire, tab_indicateurs, tab_sources = st.tabs(["ðŸ”¤ Glossaire", "ðŸ“Š Indicateurs", "ðŸŽ“ Apprendre"])
+
+    with tab_glossaire:
+        st.markdown("""
+| Terme anglais | FranÃ§ais | Explication |
+|---|---|---|
+| **Bull / Bullish** | Haussier | Le marchÃ© monte ðŸ“ˆ |
+| **Bear / Bearish** | Baissier | Le marchÃ© descend ðŸ“‰ |
+| **Long** | Achat | Pari sur la hausse |
+| **Short** | Vente Ã  dÃ©couvert | Pari sur la baisse |
+| **Stop-Loss (SL)** | ArrÃªt de perte | Limite ta perte auto |
+| **Take-Profit (TP)** | Prise de bÃ©nÃ©fice | Encaisse ton gain auto |
+| **Risk:Reward (R:R)** | Risque/RÃ©compense | 1:2 = risque 1 gagner 2 |
+| **Spread** | Ã‰cart | Diff prix achat/vente |
+| **Leverage** | Effet de levier | Multiplie gains ET pertes |
+| **Drawdown** | Perte max | Chute depuis un sommet |
+| **Win Rate** | Taux de rÃ©ussite | % de trades gagnants |
+| **Profit Factor** | Facteur de profit | Gains Ã· Pertes |
+| **Breakout** | Cassure | Prix sort d'une zone |
+| **Support** | Support | Plancher oÃ¹ Ã§a rebondit |
+| **Resistance** | RÃ©sistance | Plafond bloquant |
+| **ATH** | Plus haut historique | All-Time High |
+| **FOMO** | Peur de rater | Fear Of Missing Out |
+| **FUD** | Peur/Doute | Fear Uncertainty Doubt |
+| **DCA** | Achat rÃ©gulier | Dollar Cost Averaging |
+| **Whale** | Baleine | Gros investisseur |
+| **Funding Rate** | Taux financement | CoÃ»t position ouverte |
+| **Open Interest** | IntÃ©rÃªt ouvert | Contrats futures ouverts |
+| **Liquidation** | Liquidation | Position fermÃ©e de force |
+| **Slippage** | Glissement | Prix voulu â‰  exÃ©cutÃ© |
+| **Scalping** | Scalping | Trades trÃ¨s courts |
+| **Swing Trading** | Swing | Trades quelques jours |
+| **Backtesting** | Test historique | Tester sur le passÃ© |
+| **Sharpe Ratio** | Ratio de Sharpe | Performance/risque |
+        """)
+
+    with tab_indicateurs:
+        st.markdown("""
+#### ðŸ“ˆ RSI (Relative Strength Index) â€” 0 Ã  100
+- **< 30** = Survendu â†’ rebond probable
+- **> 70** = SurachetÃ© â†’ correction probable
+- PÃ©riode : 14 jours
+
+#### ðŸ“Š MACD (Moving Average Convergence Divergence)
+- MACD > Signal = **Bullish** (tendance hausse)
+- MACD < Signal = **Bearish** (tendance baisse)
+- Histogramme = force du signal
+
+#### ðŸŽ¯ Stochastique
+- **< 20** = Survendu | **> 80** = SurachetÃ©
+
+#### ðŸ“ Fibonacci (Retracement)
+- Niveaux : 23.6%, 38.2%, **61.8%**, 78.6%
+- Le prix rebondit souvent sur ces niveaux
+
+#### ðŸ“ MA200 (Moyenne Mobile 200 jours)
+- Prix au-dessus = tendance haussiÃ¨re long terme
+- Prix en dessous = tendance baissiÃ¨re
+
+#### â˜ï¸ Ichimoku (Nuage japonais)
+- Au-dessus du nuage = **Bullish**
+- En dessous = **Bearish**
+- Dans le nuage = **IndÃ©cis**
+- Tenkan > Kijun = signal achat
+
+#### ðŸ“Š Bandes de Bollinger
+- Prix touche bande basse â†’ survente possible
+- Prix touche bande haute â†’ surachat possible
+- Bandes serrÃ©es â†’ explosion de volatilitÃ© Ã  venir
+
+#### ðŸ’ª ADX (Force de tendance)
+- **< 25** = MarchÃ© plat â†’ PAS DE SIGNAL
+- **> 25** = Tendance confirmÃ©e â†’ signaux fiables
+- **> 40** = Tendance trÃ¨s forte
+
+#### ðŸ“ˆ VWAP (Prix moyen pondÃ©rÃ© volume)
+- Prix sous VWAP â†’ "bon marchÃ©" pour institutionnels
+- Prix au-dessus â†’ "cher"
+
+#### ðŸ¤– Machine Learning
+- PrÃ©dit hausse >1% Ã  5 jours
+- Accuracy = fiabilitÃ© du modÃ¨le
+- Confiance > 55% pour signal
+
+#### ðŸ“Š Order Flow (Carnet d'ordres)
+- Plus d'acheteurs â†’ prix monte
+- Plus de vendeurs â†’ prix baisse
+- Crypto uniquement (via Binance)
+
+#### ðŸ”€ Divergences
+- Prix lower low + RSI higher low = **divergence haussiÃ¨re** (retournement)
+- Prix higher high + RSI lower high = **divergence baissiÃ¨re**
+
+#### ðŸŒ Score Macro
+- Combine: Dollar, VIX, Taux, PÃ©trole, S&P, Fear & Greed, Funding
+- PondÃ©rÃ© par catÃ©gorie d'actif
+
+#### â›“ï¸ On-Chain (Bitcoin)
+- Fees, Mempool, Hashrate, L/S Ratio, DeFi TVL
+        """)
+
+    with tab_sources:
+        st.markdown("""
+#### ðŸ‡«ðŸ‡· Ressources en franÃ§ais
+- [Zonebourse](https://zonebourse.com) â€” Articles + formations
+- [ABC Bourse](https://abcbourse.com) â€” Formation gratuite
+- [CafÃ© de la Bourse](https://cafedelabourse.com) â€” Didactique
+
+#### ðŸ‡¬ðŸ‡§ Ressources en anglais
+- [Investopedia](https://investopedia.com) â€” EncyclopÃ©die complÃ¨te
+- [BabyPips](https://babypips.com) â€” Cours Forex/Trading
+- [TradingView](https://tradingview.com) â€” Graphiques + communautÃ©
+- [Coinglass](https://coinglass.com) â€” DonnÃ©es futures crypto
+
+#### ðŸ“š Livres recommandÃ©s
+- *L'analyse technique des marchÃ©s financiers* â€” John Murphy
+- *Trading in the Zone* â€” Mark Douglas (psychologie)
+- *The Intelligent Investor* â€” Benjamin Graham
+
+#### ðŸ› ï¸ Outils gratuits
+- **TradingView** â€” Graphiques + indicateurs
+- **CoinMarketCap** â€” DonnÃ©es crypto
+- **ForexFactory** â€” Calendrier Ã©conomique
+- **Mempool.space** â€” Bitcoin on-chain
+- **DeFi Llama** â€” TVL DeFi
+
+#### âš ï¸ RÃ¨gles d'or
+1. ðŸŽ® Commence en **simulation** (tu y es !)
+2. ðŸ’° Max **1-2%** risque par trade
+3. ðŸ“ Ratio R:R minimum **1:2**
+4. ðŸ§˜ Jamais trader sous **Ã©motion**
+5. ðŸ““ Tiens un **journal de trading**
+6. ðŸ’ª VÃ©rifie l'**ADX** avant d'entrer
+7. ðŸ”„ **Backteste** ta stratÃ©gie d'abord
+8. â° Respecte les **horaires optimaux**
+9. ðŸ“Š Confirme sur **plusieurs timeframes**
+10. ðŸ“± Ne regarde pas toutes les 5 minutes
+        """)
+
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # FOOTER
-# ══════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 st.markdown("---")
-st.caption(f"🧠 Trading Scanner v5.0 — Ultimate Edition + Simulation + Aide")
-st.caption(f"⚠️ Pas un conseil financier | Simulation uniquement | Utilise toujours un compte démo d'abord")
-st.caption(f"Score max: {sum(POIDS.values())} pts | {len(ACTIFS)} actifs | {len(POIDS)} indicateurs | ML + Ichimoku + Order Flow + Simulation")
+st.caption(f"ðŸ§  Trading Scanner v5.0 â€” Ultimate Edition | âš ï¸ Pas un conseil financier")
+st.caption(f"Score max: {sum(POIDS.values())} pts | {len(ACTIFS)} actifs | {len(POIDS)} indicateurs | ML + Ichimoku + Order Flow")
