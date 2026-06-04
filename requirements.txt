@@ -6,6 +6,6 @@ plotly
 pytz
 requests
 feedparser
-vaderSentiment
+vadersentiment
 scikit-learn
 ccxt
