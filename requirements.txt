@@ -1,1 +1,11 @@
 streamlit
+yfinance
+pandas
+numpy
+plotly
+pytz
+requests
+feedparser
+vadersentiment
+scikit-learn
+ccxt
