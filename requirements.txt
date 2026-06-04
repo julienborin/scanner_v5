@@ -9,5 +9,3 @@ feedparser
 vadersentiment
 scikit-learn
 ccxt
-lightgbm
-pandas-ta
